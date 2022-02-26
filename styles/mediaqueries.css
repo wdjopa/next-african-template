@@ -1,0 +1,36 @@
+/* Smartphones ----------- */
+@media screen and (min-width : 0) {
+
+    /* Styles */
+    .container_custom {
+        padding: 0 1rem;
+    }
+}
+
+/* iPads ----------- */
+@media screen and (min-width : 320px) {
+
+    /* Styles */
+    .container_custom {
+        padding: 0 2rem;
+    }
+}
+
+
+/* Desktops and laptops ----------- */
+@media only screen and (min-width : 768px) {
+
+    /* Styles */
+    .container_custom {
+        padding: 0 10rem;
+    }
+}
+
+/* Large screens ----------- */
+@media only screen and (min-width : 1224px) {
+
+    /* Styles */
+    .container_custom {
+        padding: 0 10rem;
+    }
+}

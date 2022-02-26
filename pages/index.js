@@ -1,69 +1,859 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import EmptyStore from "../components/EmptyStore";
+import Main from "../components/layout/Main";
+import FeaturedCollection from "../components/sections/FeaturedCollection";
+import FeaturedProduct from "../components/sections/FeaturedProduct";
+import Hero from "../components/sections/Hero";
+import ImageAndText from "../components/sections/ImageAndText";
+import TextAndButton from "../components/sections/TextAndButton";
+import { genuka_api_2021_10 } from "../utils/configs";
 
-export default function Home() {
+// This gets called on every request
+export async function getServerSideProps({ params, req, res, resolvedUrl, query }) {
+  let protocol = "https:";
+  let host = req ? req.headers.host : window.location.hostname;
+  if (host.indexOf("localhost") > -1) {
+    protocol = "http:";
+  }
+  let website_url = `${protocol}//${host}`;
+
+  // Fetch data from external API
+  let response = await fetch(`${genuka_api_2021_10}/companies/byurl?url=${website_url}`);
+  const company = await response.json();
+
+  return { props: { company } };
+}
+export default function Home({ company }) {
+  if (!company) return <EmptyStore />;
+
+  const heroes = [
+    {
+      disposition: "up",
+      title: "MATANGA Shoes",
+      paragraph: "Et si on vous disait que vous n'avez plus le droit de vous chausser par défaut ? Nous sommes la meilleure alternative",
+      button: {
+        text: "Start shopping now",
+        link: "/collections/all",
+      },
+      image: {
+        url: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5579/155187174_802463503946440_5538153164449173310_n.jpg",
+        alt: "Et si on vous disait que vous n'avez plus le droit de vous chausser par défaut ? Nous sommes la meilleure alternative",
+      },
+    },
+    {
+      disposition: "down",
+      title: "MATANGA Shoes",
+      paragraph: "Sometimes we make them just for eyes not for feet",
+      button: {
+        text: "Start shopping now",
+        link: "/collections/all",
+      },
+      image: {
+        url: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5578/150019602_803202313876868_1699266300643458422_n.jpg",
+        alt: "Sometimes we make them just for eyes not for feet",
+      },
+    },
+  ];
+
+  const text_and_button = {
+    title: "Learn more about us",
+    paragraph: "Donec metus turpis, viverra sit amet facilisis eget, elementum vel ligula. Morbi posuere metus non neque pharetra, a egestas diam scelerisque",
+    button: {
+      link: "https://market.lamater.net",
+      text: "GET IN TOUCH",
+    },
+  };
+
+  const image_and_text = {
+    image_first: false,
+    image: {
+      url: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
+      alt: "Image de la collection SHAKA",
+    },
+    title: "Nouvelle collection SHAKA",
+    subtitle: "Découvrez la collection Shaka 2020",
+    paragraph: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vestibulum, lacus eget consequat mollis, felis.",
+    button: {
+      link: "https://market.lamater.net/collections",
+      text: "Découvrir la collection",
+    },
+  };
+
+  const product = {
+    id: 2379,
+    name: "Gateaux d'anniversaire",
+    description: "",
+    stocks: 10000,
+    infinite_stocks: 1,
+    editable: 0,
+    available: 1,
+    price: 9000,
+    discounted_price: 9000,
+    comparaison_price: 0,
+    slug: "gateaux-danniversaire-2",
+    code: "c0dcbc57-ec08-492e-92c1-80c73dfe2f88",
+    medias: [
+      {
+        id: 2017,
+        link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2017/gateau_d_a.jpg",
+        collection_name: "default",
+        collection: {
+          id: 3,
+          name: "default",
+          description: null,
+          entreprise_id: 2,
+          created_at: "2021-02-10T10:46:50.000000Z",
+          updated_at: "2021-02-10T10:46:50.000000Z",
+        },
+        thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2017/conversions/gateau_d_a-thumb.jpg",
+      },
+      {
+        id: 2018,
+        link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2018/gateau.jpg",
+        collection_name: "default",
+        collection: {
+          id: 3,
+          name: "default",
+          description: null,
+          entreprise_id: 2,
+          created_at: "2021-02-10T10:46:50.000000Z",
+          updated_at: "2021-02-10T10:46:50.000000Z",
+        },
+        thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2018/conversions/gateau-thumb.jpg",
+      },
+    ],
+    tags: [],
+    collections: [],
+    variants: [
+      {
+        name: "nom de la boulangerie / taille / parfum",
+        slug: "nom_de_la_boulangerie_taille_parfum",
+        options: [
+          {
+            id: 1,
+            name: "calafatas / 1 / fraise",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 2,
+            name: "calafatas / 1 / vanille",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 3,
+            name: "calafatas / 1 / caramel",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 4,
+            name: "calafatas / 1 / chocolat",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 5,
+            name: "calafatas / 2 / fraise",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 6,
+            name: "calafatas / 2 / vanille",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 7,
+            name: "calafatas / 2 / caramel",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 8,
+            name: "calafatas / 2 / chocolat",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 9,
+            name: "calafatas / 3 / fraise",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 10,
+            name: "calafatas / 3 / vanille",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 11,
+            name: "calafatas / 3 / caramel",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 12,
+            name: "calafatas / 3 / chocolat",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 13,
+            name: "selecte / 1 / fraise",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 14,
+            name: "selecte / 1 / vanille",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 15,
+            name: "selecte / 1 / caramel",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 16,
+            name: "selecte / 1 / chocolat",
+            image: "",
+            price: 9000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 9000,
+          },
+          {
+            id: 17,
+            name: "selecte / 2 / fraise",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 18,
+            name: "selecte / 2 / vanille",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 19,
+            name: "selecte / 2 / caramel",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 20,
+            name: "selecte / 2 / chocolat",
+            image: "",
+            price: 11000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 11000,
+          },
+          {
+            id: 21,
+            name: "selecte / 3 / fraise",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 22,
+            name: "selecte / 3 / vanille",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 23,
+            name: "selecte / 3 / caramel",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 24,
+            name: "selecte / 3 / chocolat",
+            image: "",
+            price: 15000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 15000,
+          },
+          {
+            id: 25,
+            name: "acropole / 1 / fraise",
+            image: "",
+            price: 12000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12000,
+          },
+          {
+            id: 26,
+            name: "acropole / 1 / vanille",
+            image: "",
+            price: 12000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12000,
+          },
+          {
+            id: 27,
+            name: "acropole / 1 / caramel",
+            image: "",
+            price: 12000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12000,
+          },
+          {
+            id: 28,
+            name: "acropole / 1 / chocolat",
+            image: "",
+            price: 12000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12000,
+          },
+          {
+            id: 29,
+            name: "acropole / 2 / fraise",
+            image: "",
+            price: 14000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 14000,
+          },
+          {
+            id: 30,
+            name: "acropole / 2 / vanille",
+            image: "",
+            price: 14000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 14000,
+          },
+          {
+            id: 31,
+            name: "acropole / 2 / caramel",
+            image: "",
+            price: 14000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 14000,
+          },
+          {
+            id: 32,
+            name: "acropole / 2 / chocolat",
+            image: "",
+            price: 14000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 14000,
+          },
+          {
+            id: 33,
+            name: "acropole / 3 / fraise",
+            image: "",
+            price: 17000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 17000,
+          },
+          {
+            id: 34,
+            name: "acropole / 3 / vanille",
+            image: "",
+            price: 17000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 17000,
+          },
+          {
+            id: 35,
+            name: "acropole / 3 / caramel",
+            image: "",
+            price: 17000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 17000,
+          },
+          {
+            id: 36,
+            name: "acropole / 3 / chocolat",
+            image: "",
+            price: 17000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 17000,
+          },
+          {
+            id: 37,
+            name: "ble d'or / 1 / fraise",
+            image: "",
+            price: 8000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 8000,
+          },
+          {
+            id: 38,
+            name: "ble d'or / 1 / vanille",
+            image: "",
+            price: 8000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 8000,
+          },
+          {
+            id: 39,
+            name: "ble d'or / 1 / caramel",
+            image: "",
+            price: 8000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 8000,
+          },
+          {
+            id: 40,
+            name: "ble d'or / 1 / chocolat",
+            image: "",
+            price: 8000,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 8000,
+          },
+          {
+            id: 41,
+            name: "ble d'or / 2 / fraise",
+            image: "",
+            price: 10500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 10500,
+          },
+          {
+            id: 42,
+            name: "ble d'or / 2 / vanille",
+            image: "",
+            price: 10500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 10500,
+          },
+          {
+            id: 43,
+            name: "ble d'or / 2 / caramel",
+            image: "",
+            price: 10500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 10500,
+          },
+          {
+            id: 44,
+            name: "ble d'or / 2 / chocolat",
+            image: "",
+            price: 10500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 10500,
+          },
+          {
+            id: 45,
+            name: "ble d'or / 3 / fraise",
+            image: "",
+            price: 12500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12500,
+          },
+          {
+            id: 46,
+            name: "ble d'or / 3 / vanille",
+            image: "",
+            price: 12500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12500,
+          },
+          {
+            id: 47,
+            name: "ble d'or / 3 / caramel",
+            image: "",
+            price: 12500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12500,
+          },
+          {
+            id: 48,
+            name: "ble d'or / 3 / chocolat",
+            image: "",
+            price: 12500,
+            stocks: 9999,
+            description: "",
+            additionnal_fee: 12500,
+          },
+        ],
+        required: true,
+        description: "Sélectionnez un élément dans la liste.",
+        max_choices: 1,
+      },
+    ],
+    reviews: [],
+    avg_reviews: null,
+    total_reviews: 0,
+    company_id: 2,
+    created_at: "2021-01-25T23:30:24.000000Z",
+    updated_at: "2022-02-08T23:10:08.000000Z",
+  };
+  const collection = {
+    products: {
+      data: [
+        {
+          id: 2847,
+          name: "Moisturizer* lait corps concentr\u00e9 ultra-\u00e9claircissant",
+          description: "<p>Ce produit est un lait ultra enrichissant pour le corps \u263a\ufe0f</p>",
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 100,
+          discounted_price: 100,
+          comparaison_price: 0,
+          slug: "moisturizer-lait-corps-concentre-ultra-eclaircissant",
+          code: "d93oICED",
+          medias: [
+            {
+              id: 2725,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2725/4H0A1759.jpg",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2725/conversions/4H0A1759-thumb.jpg",
+            },
+            {
+              id: 5557,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5557/Octavia0353.jpg",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5557/conversions/Octavia0353-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps"],
+          variants: [],
+          reviews: [],
+          avg_reviews: 2.5,
+          total_reviews: 2,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:11.000000Z",
+          updated_at: "2022-02-26T09:51:17.000000Z",
+        },
+        {
+          id: 2837,
+          name: "Kit r\u00e9parateur verg\u00e9tures",
+          description: null,
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 90,
+          discounted_price: 90,
+          comparaison_price: 0,
+          slug: "kit-reparateur-vergetures-349",
+          code: "126876e6-bf64-4d19-9a87-d8ae8eaa1ffe",
+          medias: [
+            {
+              id: 2721,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2721/8F9005FC-1DC2-48CD-98D2-637856CB83D6.PNG",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2721/conversions/8F9005FC-1DC2-48CD-98D2-637856CB83D6-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps"],
+          variants: [],
+          reviews: [],
+          avg_reviews: null,
+          total_reviews: 0,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:10.000000Z",
+          updated_at: "2022-02-26T09:41:11.000000Z",
+        },
+        {
+          id: 2845,
+          name: "Lait corps \u00e9claircissant",
+          description: null,
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 100,
+          discounted_price: 100,
+          comparaison_price: 0,
+          slug: "lait-corps-eclaircissant-349",
+          code: "6c25145a-747a-4b55-b7bd-47d925803019",
+          medias: [
+            {
+              id: 2713,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2713/Image.JPG",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2713/conversions/Image-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps"],
+          variants: [],
+          reviews: [],
+          avg_reviews: null,
+          total_reviews: 0,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:10.000000Z",
+          updated_at: "2022-02-08T23:10:10.000000Z",
+        },
+        {
+          id: 2844,
+          name: "Lait corps clarifiant",
+          description: null,
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 100,
+          discounted_price: 100,
+          comparaison_price: 0,
+          slug: "lait-corps-clarifiant-349",
+          code: "695b5e00-68ba-484d-9cef-4c1ef3688bb2",
+          medias: [
+            {
+              id: 2714,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2714/690ED671-12B1-45BA-8FD8-405FCEAC1737.PNG",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2714/conversions/690ED671-12B1-45BA-8FD8-405FCEAC1737-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps", "Meilleurs produits"],
+          variants: [],
+          reviews: [],
+          avg_reviews: null,
+          total_reviews: 0,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:10.000000Z",
+          updated_at: "2022-02-08T23:10:10.000000Z",
+        },
+        {
+          id: 2843,
+          name: "P\u00e2te v\u00e9g\u00e9tale lavante pour hamman + gant exfoliant",
+          description: null,
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 100,
+          discounted_price: 100,
+          comparaison_price: 0,
+          slug: "pate-vegetale-lavante-pour-hamman-gant-exfoliant-349",
+          code: "66245a5a-0c49-4620-aa1b-f6b8b89ee80b",
+          medias: [
+            {
+              id: 2715,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2715/IMG_5955.JPG",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2715/conversions/IMG_5955-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps"],
+          variants: [],
+          reviews: [],
+          avg_reviews: null,
+          total_reviews: 0,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:10.000000Z",
+          updated_at: "2022-02-08T23:10:10.000000Z",
+        },
+        {
+          id: 2842,
+          name: "Gommage corps granit\u00e9 \u00e0 la bave d'escargot",
+          description: null,
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 50,
+          discounted_price: 50,
+          comparaison_price: 0,
+          slug: "gommage-corps-granite-a-la-bave-descargot-349",
+          code: "db99be96-67c8-4199-a4a6-380608d27e29",
+          medias: [
+            {
+              id: 2716,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2716/96A6D7FD-83DE-452A-99FC-34E341038138.jpg",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2716/conversions/96A6D7FD-83DE-452A-99FC-34E341038138-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps", "Meilleurs produits"],
+          variants: [],
+          reviews: [],
+          avg_reviews: null,
+          total_reviews: 0,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:10.000000Z",
+          updated_at: "2022-02-08T23:10:10.000000Z",
+        },
+        {
+          id: 2840,
+          name: "Cr\u00e8me \u00e9claircissante entrejambe",
+          description: null,
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 90,
+          discounted_price: 90,
+          comparaison_price: 0,
+          slug: "creme-eclaircissante-entrejambe-349",
+          code: "2ebba421-5143-47cb-9b8e-f9c5033a9747",
+          medias: [
+            {
+              id: 2718,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2718/FB05569B-9463-46B6-8916-C95414B09A50.PNG",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2718/conversions/FB05569B-9463-46B6-8916-C95414B09A50-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps"],
+          variants: [],
+          reviews: [],
+          avg_reviews: null,
+          total_reviews: 0,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:10.000000Z",
+          updated_at: "2022-02-08T23:10:10.000000Z",
+        },
+        {
+          id: 2839,
+          name: "Cr\u00e8me sp\u00e9cifique mains-pieds / genoux-coudes",
+          description: null,
+          stocks: 10000,
+          infinite_stocks: 1,
+          editable: 0,
+          available: 1,
+          price: 60,
+          discounted_price: 60,
+          comparaison_price: 0,
+          slug: "creme-specifique-mains-pieds-genoux-coudes-349",
+          code: "1761098f-1b40-40de-b0d7-8cf67bb538f1",
+          medias: [
+            {
+              id: 2719,
+              link: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2719/F4996CD2-B097-4343-AB77-C0C19D0633EC.PNG",
+              collection_name: "default",
+              collection: { id: 3, name: "default", description: null, entreprise_id: 2, created_at: "2021-02-10T10:46:50.000000Z", updated_at: "2021-02-10T10:46:50.000000Z" },
+              thumb: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/2719/conversions/F4996CD2-B097-4343-AB77-C0C19D0633EC-thumb.jpg",
+            },
+          ],
+          tags: [],
+          collections: ["Gamme soins corps", "Meilleurs produits"],
+          variants: [],
+          reviews: [],
+          avg_reviews: null,
+          total_reviews: 0,
+          company_id: 349,
+          created_at: "2021-07-04T11:32:10.000000Z",
+          updated_at: "2022-02-08T23:10:10.000000Z",
+        },
+      ],
+      links: { first: "https://dashboard.genuka.com/api/2021-10/companies/349/collections/143?page=1", last: "https://dashboard.genuka.com/api/2021-10/companies/349/collections/143?page=2", prev: null, next: "https://dashboard.genuka.com/api/2021-10/companies/349/collections/143?page=2" },
+      meta: { current_page: 1, from: 1, last_page: 2, path: "https://dashboard.genuka.com/api/2021-10/companies/349/collections/143", per_page: 8, to: 8, total: 11 },
+      pagination: { total: 11, count: 8, per_page: 8, current_page: 1, total_pages: 2 },
+    },
+    collection: { id: 143, name: "Gamme soins corps", description: "La gamme des produits pour votre corps", entreprise_id: 349, parent_collection_id: null, created_at: "2021-07-04T11:12:17.000000Z", updated_at: "2022-02-26T09:38:25.000000Z" },
+  };
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Generated by create next app" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
-  )
+    <Main company={company}>
+      <Hero heroes={heroes} />
+      <FeaturedCollection collection={collection} />
+      <ImageAndText datas={image_and_text} />
+      <FeaturedProduct product={product} />
+      <TextAndButton datas={text_and_button} />
+    </Main>
+  );
 }
