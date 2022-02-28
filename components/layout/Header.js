@@ -19,14 +19,15 @@ const HeaderContainer = styledComponents.div`
     position: sticky;
     top: 0;
     background: white;
-    padding-bottom: 20px;
+    padding-bottom: calc(10px + 1vw);
+    padding-top: calc(10px + 1vw);
     z-index: 500;
 `;
 
 function Header(props) {
   const { company } = props;
   return (
-    <HeaderContainer className="container my-3 d-flex justify-content-between align-items-center" {...props}>
+    <HeaderContainer className="container d-flex justify-content-between align-items-center" {...props}>
       <div className="d-flex d-lg-none" style={{ width: "30%" }}>
         <SideBar company={company} />
       </div>

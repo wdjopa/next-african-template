@@ -76,9 +76,11 @@ export default function Home({ company }) {
 
   return (
     <Main company={company}>
+      {/* <Carousel/> */}
+      <ImageAndText datas={{...image_and_text, image_first: true}} />
       <Hero heroes={heroes} />
       <FeaturedCollection collection={collection} />
-      <ImageAndText datas={image_and_text} />
+      <ImageAndText  datas={image_and_text} />
       <FeaturedProduct product={product} />
       <TextAndButton datas={text_and_button} />
     </Main>

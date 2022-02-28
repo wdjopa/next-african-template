@@ -80,16 +80,63 @@ function ProductVariants({ variants }) {
   );
 }
 
+const ThumbnailsContainer = styledComponents.div`
+    overflow-x: auto;
+`;
+const ThumbnailsContent = styledComponents.div`
+    @media screen and (max-width: 760px){
+        white-space: nowrap;
+    }
+`;
+
+const Thumb = styledComponents.div`
+    height: 5rem;
+    width: 5rem;
+    border: 3px solid ${(props) => (props.active ? "#333" : "white")};
+    border-radius: 4px;
+    margin: 1rem 0;
+    margin-right: .81rem;
+    display: inline-block;
+`;
+
+const RoundedThumbnail = styledComponents.img`
+    object-fit: contain;
+    object-position: center center;
+    width: 100%; 
+    height: 100%; 
+    border-radius: 4px;
+`;
 
 function Thumbnails({ thumbnails }) {
-  return <div></div>;
+  return (
+    <ThumbnailsContainer>
+      <ThumbnailsContent>
+        {[
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
+          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
+        ].map((thumbnail, i) => {
+          return (
+            <Thumb key={i} active={i === 0}>
+              <RoundedThumbnail src={thumbnail} alt="image" />
+            </Thumb>
+          );
+        })}
+      </ThumbnailsContent>
+    </ThumbnailsContainer>
+  );
 }
 
 function ImagesManager() {
   let thumbnails;
   return (
     <div>
-      <div>
+      <div className="mb-4">
         <RoundedImage src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5575/207591898_820974238535060_8557725586980579605_n.jpg"} alt="image" />
       </div>
       <Thumbnails thumbnails={thumbnails || []} />
@@ -116,7 +163,7 @@ function ProductDetail({ company, product }) {
           <div className="col-md-6 py-4">
             <ProductName>Double Monk Slip-sneaker</ProductName>
             <ProductPrice>35 000 FCFA</ProductPrice>
-            <br/>
+            <br />
             <ProductVariants variants={[]} />
             <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
             <DesignedButton full onClick={() => {}} secondary={true}>
