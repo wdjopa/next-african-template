@@ -3,7 +3,7 @@ import React from "react";
 import styledComponents from "styled-components";
 import DesignedButton from "../components/common/DesignedButton";
 import DesignedTitle from "../components/common/DesignedTitle";
-import QuantitySelector from "../components/common/quantitySelector";
+import QuantitySelector from "../components/common/QuantitySelector";
 import Recommandations from "../components/common/Recommandations";
 import Trash from "../components/icons/Trash";
 import Main from "../components/layout/Main";
