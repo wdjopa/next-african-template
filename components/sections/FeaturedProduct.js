@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import styledComponents from "styled-components";
 import DesignedButton from "../common/DesignedButton";
@@ -95,12 +96,12 @@ function FeaturedProduct({ product }) {
           <DesignedButton full onClick={() => {}} secondary={true}>
             Add to cart
           </DesignedButton>
-          <a href="" style={{ marginTop: "1rem", display: "block" }}>
+          <Link href="/products/2" passHref style={{ marginTop: "1rem", display: "block" }}>
             <TransparentLink>
               <span>Go to product page</span>
               <Arrow />
             </TransparentLink>
-          </a>
+          </Link>
         </div>
       </div>
     </SectionContainer>
