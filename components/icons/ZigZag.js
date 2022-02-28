@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ZigZag({props}) {
+function ZigZag(props) {
   return (
     <svg width="368" height="19" viewBox="0 0 368 19" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path d="M91.8871 12.5L103.371 1L114.855 12.5L126.339 1L137.823 12.5L149.306 1L160.79 12.5L172.274 1L183.758 12.5L195.242 1L206.726 12.5L218.21 1L229.694 12.5L241.177 1L252.661 12.5L264.145 1L275.629 12.5L287.113 1L298.597 12.5L310.081 1L321.564 12.5L333.048 1L344.532 12.5L356.016 1" stroke="#348989" />

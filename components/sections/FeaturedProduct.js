@@ -1,6 +1,7 @@
 import React from "react";
 import styledComponents from "styled-components";
 import DesignedButton from "../common/DesignedButton";
+import QuantitySelector from "../common/quantitySelector";
 import Variant from "../common/Variant";
 import Arrow from "../icons/Arrow";
 import SectionContainer from "./SectionContainer";
@@ -31,7 +32,6 @@ const TransparentLink = styledComponents.div`
   align-items:center;
   font-size: 1.5rem;
 `;
-
 
 function ProductVariants({ variants }) {
   return (
@@ -78,22 +78,20 @@ function ProductVariants({ variants }) {
   );
 }
 
-function ProductQuantity() {
-  return <></>;
-}
 
 function FeaturedProduct({ product }) {
+  const [quantity, setQuantity] = React.useState(1);
   return (
     <SectionContainer>
       <div className="row">
-        <div className="col-md-6 p-4">
+        <div className="col-md-6 py-4">
           <RoundedImage src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5575/207591898_820974238535060_8557725586980579605_n.jpg"} alt="image" />
         </div>
         <div className="col-md-6 p-4">
           <ProductName>Double Monk Slip-sneaker</ProductName>
           <ProductPrice>35 000 FCFA</ProductPrice>
           <ProductVariants variants={product.variants} />
-          <ProductQuantity />
+          <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
           <DesignedButton full onClick={() => {}} secondary={true}>
             Add to cart
           </DesignedButton>

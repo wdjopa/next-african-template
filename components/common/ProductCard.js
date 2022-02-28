@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import styledComponents from "styled-components";
 
@@ -35,20 +36,21 @@ const ProductPrice = styledComponents.div`
     padding-bottom: 10px;
 `;
 
-function ProductCard({ product, className }) {
-  return (
-    <div className={className} style={{ padding: "1rem", boxSizing: "border-box" }}>
-      <a href={"https://lamater.net"}>
-        <ProductCardContainer>
-          <ImageContainer>
-            <Image src={product} alt={"Chaussure rhino"} />
-          </ImageContainer>
-          <ProductName>Rhino</ProductName>
-          <ProductPrice>25.000 FCFA</ProductPrice>
-        </ProductCardContainer>
-      </a>
-    </div>
-  );
+function ProductCard(props) {
+    const { product } = props
+    return (
+      <div {...props} style={{ padding: "1rem", boxSizing: "border-box" }}>
+        <Link href={"/products/1"} passHref>
+          <ProductCardContainer>
+            <ImageContainer>
+              <Image src={product} alt={"Chaussure rhino"} />
+            </ImageContainer>
+            <ProductName>Rhino</ProductName>
+            <ProductPrice>25.000 FCFA</ProductPrice>
+          </ProductCardContainer>
+        </Link>
+      </div>
+    );
 }
 
 export default ProductCard;

@@ -6,19 +6,21 @@ import Footer from "./Footer";
 import Announcement from "./Announcement";
 import { useGenukaDispatch } from "../../store/genukaStore";
 
-
 function Main({ company, children, head }) {
   const dispatch = useGenukaDispatch();
-  const [globalStyle, setGlobalStyle] = React.useState({ "--main-color": "black", "--primary-color": "green", "--secondary-color": "red", "--main-font": "josefin sans" })
+  const [globalStyle, setGlobalStyle] = React.useState({ "--main-color": "black", "--primary-color": "green", "--secondary-color": "red", "--main-font": "josefin sans" });
   useEffect(() => {
-    if (company) {
-      dispatch({ type: "company", payload: company });
-      
-      setGlobalStyle({...globalStyle, "--primary-color" :  "#348989", "--secondary-color" :  "#D31B51"});
-    }
+    setGlobalStyle({ ...globalStyle, "--primary-color": "#348989", "--secondary-color": "#D31B51" });
   }, [company]);
 
-
+  // Sticky Menu Area
+  //   useEffect(() => {
+  //     window.addEventListener("scroll", isSticky);
+  //     return () => {
+  //       window.removeEventListener("scroll", isSticky);
+  //     };
+  //   });
+  
   return (
     <div style={globalStyle}>
       <Head>{head ? head : <title>Home</title>}</Head>

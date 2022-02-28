@@ -2,12 +2,15 @@ import React, { useState } from "react";
 
 function Announcement({ text, visible = false }) {
   const [show, set_show] = useState(visible);
+
+  
   if (!show) return <></>;
   return (
     <div className="announcement">
       <div className="container announcement_container">
-        <span></span>
+        <span>
         {text}
+        </span>
         <span
           onClick={() => {
             set_show(false);

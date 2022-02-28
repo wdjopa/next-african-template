@@ -3,18 +3,20 @@ import styledComponents from "styled-components";
 import UserIcon from "../icons/UserIcon";
 
 const Container = styledComponents.div`
-    margin-left: 1rem;
+    ${(props) => (props.mobile ? "" : "margin-left: 1rem;")}
+
 `;
 
 const ActionIcon = styledComponents.div`
     cursor: pointer;
     padding: 5px 10px;
 `;
-function AccountHeader() {
+function AccountHeader(props) {
+  const { mobile } = props;
   return (
-    <Container>
+    <Container mobile={mobile}>
       <ActionIcon>
-        <UserIcon />
+        <UserIcon width={"20"} height={"20"} size={512} />
       </ActionIcon>
     </Container>
   );

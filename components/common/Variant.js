@@ -16,8 +16,8 @@ const VariantOptions = styledComponents.div`
 const ColorCircle = styledComponents.div`
     border-radius: 100%;
     margin-right: .5rem;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     background: ${(props) => props.color};
     border: 2px solid ${(props) => (props.active ? "black" : "transparent")};
     cursor: pointer;
