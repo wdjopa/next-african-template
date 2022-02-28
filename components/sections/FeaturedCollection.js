@@ -31,7 +31,7 @@ function FeaturedCollection({ collection }) {
         })}
       </ProductGrid>
       <div className="text-center mt-5">
-        <a href={"/collections/" + collection.id || "https://lamater.net"}>
+        <a href={"/collections/" + collection.id || "/collections/all"}>
           <DesignedButton>SHOW ALL</DesignedButton>
         </a>
       </div>

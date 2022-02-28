@@ -66,7 +66,7 @@ export default function Home({ company }) {
     subtitle: "Découvrez la collection Shaka 2020",
     paragraph: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vestibulum, lacus eget consequat mollis, felis.",
     button: {
-      link: "https://market.lamater.net/collections",
+      link: "/collections/2",
       text: "Découvrir la collection",
     },
   };

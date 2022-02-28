@@ -19,7 +19,7 @@ const RoundedImage = styledComponents.img`
 `;
 
 const ProductName = styledComponents.h2`
-  font-size: 3.5rem;
+  font-size: 2.5rem;
 `;
 const ProductPrice = styledComponents.h4`
   font-size: 2rem;
@@ -113,9 +113,10 @@ function ProductDetail({ company, product }) {
           <div className="col-md-6 py-4">
             <ImagesManager />
           </div>
-          <div className="col-md-6 p-4">
+          <div className="col-md-6 py-4">
             <ProductName>Double Monk Slip-sneaker</ProductName>
             <ProductPrice>35 000 FCFA</ProductPrice>
+            <br/>
             <ProductVariants variants={[]} />
             <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
             <DesignedButton full onClick={() => {}} secondary={true}>
