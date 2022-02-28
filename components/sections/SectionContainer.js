@@ -2,7 +2,7 @@ import React from "react";
 import styledComponents from "styled-components";
 
 const Container = styledComponents.div`
-    margin: 5rem 0;
+    margin: 3rem 0;
     box-sizing:border-box;
 `;
 function SectionContainer(props) {

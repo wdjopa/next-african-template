@@ -19,7 +19,6 @@ const HeaderContainer = styledComponents.div`
     top: 0;
     background: white;
     padding-bottom: 20px;
-    padding-top: 20px;
     z-index: 500;
 `;
 

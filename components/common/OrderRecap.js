@@ -81,12 +81,12 @@ function OrderRecap(props) {
     <Container {...props}>
       <Title>Récapitulatif de la commande</Title>
       <ProductLine className="row">
-        <div className="col-md-3">
+        <div className="col-3">
           <ImageContainer>
             <Image src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5570/274607836_484834773151976_5519080402532895223_n.jfif"} alt={"Image de chaussure"} />
           </ImageContainer>
         </div>
-        <ProductInformations className="col-md-9">
+        <ProductInformations className="col-9">
           <ProductName href="/products/2" passHref>
             MATANGA QUATRO UNISEXE
           </ProductName>

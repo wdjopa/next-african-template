@@ -77,6 +77,10 @@ function CheckoutPageInformations({ company }) {
         <DesignedTitle>Checkout</DesignedTitle>
         <Breadcrumb items={items} />
         <div className="row ">
+          {/* VISIBLE SUR PC et INVISIBLE SUR MOBILE */}
+          <div className="col-md-5 d-block d-md-none">
+            <OrderRecap />
+          </div>
           <div className="col-md-7">
             <div className="row ">
               <div className="col-md-12">
@@ -145,7 +149,8 @@ function CheckoutPageInformations({ company }) {
               </div>
             </div>
           </div>
-          <div className="col-md-5">
+          {/* VISIBLE SUR PC et INVISIBLE SUR MOBILE */}
+          <div className="col-md-5 d-none d-md-block">
             <OrderRecap />
           </div>
         </div>
