@@ -10,6 +10,7 @@ function Main({ company, children, head }) {
   const dispatch = useGenukaDispatch();
   const [globalStyle, setGlobalStyle] = React.useState({ "--main-color": "black", "--primary-color": "green", "--secondary-color": "red", "--main-font": "josefin sans" });
   useEffect(() => {
+    dispatch({type:"company", payload: company})
     setGlobalStyle({ ...globalStyle, "--primary-color": "#348989", "--secondary-color": "#D31B51" });
   }, [company]);
 

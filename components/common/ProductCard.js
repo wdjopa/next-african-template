@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import styledComponents from "styled-components";
+import { getCompany } from "../../store/genukaStore";
 
 const ProductCardContainer = styledComponents.div`
     border-radius: 4px;
@@ -37,16 +38,16 @@ const ProductPrice = styledComponents.div`
 `;
 
 function ProductCard(props) {
-    const { product } = props
+    const { product, currency = "F CFA" } = props
     return (
       <div {...props} style={{ padding: "1rem", boxSizing: "border-box" }}>
-        <Link href={"/products/1"} passHref>
+        <Link href={"/products/"+product.slug} passHref>
           <ProductCardContainer>
             <ImageContainer>
-              <Image src={product} alt={"Chaussure rhino"} />
+              <Image src={product?.medias?.length > 0 ? product.medias[0].thumb : ""} alt={"Image "+product.name} />
             </ImageContainer>
-            <ProductName>Rhino</ProductName>
-            <ProductPrice>25.000 FCFA</ProductPrice>
+            <ProductName>{product.name}</ProductName>
+            <ProductPrice>{product.price} {currency}</ProductPrice>
           </ProductCardContainer>
         </Link>
       </div>

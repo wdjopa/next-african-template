@@ -78,7 +78,7 @@ function Footer({ company }) {
         <div className=" col-md-4">
           <CompanyName>{company.name}</CompanyName>
           <CompanyDescription>{company.description}</CompanyDescription>
-          <Image src={company.logo} alt={"Logo de " + company.name} width={100} height={100} />
+          {company.logo && <Image src={company.logo} alt={"Logo de " + company.name} width={100} height={100} />}
         </div>
         <div className="   col-md-4">
           <Title className="main-font">Links</Title>

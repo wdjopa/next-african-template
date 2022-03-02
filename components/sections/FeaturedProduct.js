@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import styledComponents from "styled-components";
+import { ProductVariants } from "../../pages/products/[product_id]";
 import DesignedButton from "../common/DesignedButton";
 import QuantitySelector from "../common/QuantitySelector";
 import Variant from "../common/Variant";
@@ -34,69 +35,24 @@ const TransparentLink = styledComponents.div`
   font-size: 1.5rem;
 `;
 
-function ProductVariants({ variants }) {
-  return (
-    <>
-      <Variant
-        variant={{
-          name: "Color",
-          options: [
-            {
-              value: "#AD1E44",
-            },
-            {
-              value: "#348989",
-            },
-            {
-              value: "#0C7FEA",
-            },
-          ],
-        }}
-      />
-      <Variant
-        variant={{
-          name: "Size",
-          options: [
-            {
-              value: "37",
-            },
-            {
-              value: "39",
-            },
-            {
-              value: "41",
-            },
-            {
-              value: "42",
-            },
-            {
-              value: "45",
-            },
-          ],
-        }}
-      />
-    </>
-  );
-}
 
-
-function FeaturedProduct({ product }) {
+function FeaturedProduct({ product, currency }) {
   const [quantity, setQuantity] = React.useState(1);
   return (
     <SectionContainer>
       <div className="row">
         <div className="col-md-6 py-4">
-          <RoundedImage src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5575/207591898_820974238535060_8557725586980579605_n.jpg"} alt="image" />
+          <RoundedImage src={product.medias[0].link} alt="image" />
         </div>
         <div className="col-md-6 p-4">
-          <ProductName>Double Monk Slip-sneaker</ProductName>
-          <ProductPrice>35 000 FCFA</ProductPrice>
+          <ProductName>{product.name}</ProductName>
+          <ProductPrice>{product.price} {currency}</ProductPrice>
           <ProductVariants variants={product.variants} />
           <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
           <DesignedButton full onClick={() => {}} secondary={true}>
             Add to cart
           </DesignedButton>
-          <Link href="/products/2" passHref style={{ marginTop: "1rem", display: "block" }}>
+          <Link href={"/products/"+product.slug} passHref style={{ marginTop: "1rem", display: "block" }}>
             <TransparentLink>
               <span>Go to product page</span>
               <Arrow />

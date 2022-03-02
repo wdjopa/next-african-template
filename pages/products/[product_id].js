@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styledComponents from "styled-components";
 import Accordion from "../../components/common/Accordion";
 import DesignedButton from "../../components/common/DesignedButton";
@@ -8,6 +8,7 @@ import Variant from "../../components/common/Variant";
 import Share from "../../components/icons/Share";
 import Main from "../../components/layout/Main";
 import SectionContainer from "../../components/sections/SectionContainer";
+import { genuka_api_2021_10 } from "../../utils/configs";
 
 const RoundedImage = styledComponents.img`
     object-fit: cover;
@@ -35,10 +36,13 @@ const TransparentLink = styledComponents.div`
   font-size: 1rem;
 `;
 
-function ProductVariants({ variants }) {
+export function ProductVariants({ variants }) {
   return (
     <>
-      <Variant
+    {variants.map(variant => {
+      return <Variant key={variant.id} variant={variant} />
+    })}
+      {/* <Variant
         variant={{
           name: "Color",
           options: [
@@ -75,7 +79,7 @@ function ProductVariants({ variants }) {
             },
           ],
         }}
-      />
+      /> */}
     </>
   );
 }
@@ -107,23 +111,20 @@ const RoundedThumbnail = styledComponents.img`
     border-radius: 4px;
 `;
 
-function Thumbnails({ thumbnails }) {
+function Thumbnails({ medias, selectThumbnail, selectedMedia }) {
   return (
     <ThumbnailsContainer>
       <ThumbnailsContent>
-        {[
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-        ].map((thumbnail, i) => {
+        {medias.map((media, i) => {
           return (
-            <Thumb key={i} active={i === 0}>
-              <RoundedThumbnail src={thumbnail} alt="image" />
+            <Thumb key={i} active={media.id === selectedMedia.id}>
+              <RoundedThumbnail
+                src={media.thumb}
+                alt="image miniature "
+                onClick={() => {
+                  selectThumbnail(media);
+                }}
+              />
             </Thumb>
           );
         })}
@@ -132,25 +133,29 @@ function Thumbnails({ thumbnails }) {
   );
 }
 
-function ImagesManager() {
-  let thumbnails;
+function ImagesManager({ product }) {
+  let medias = product.medias;
+  const [selectedImage, setSelectedImage] = React.useState(product.medias[0]);
+  React.useEffect(()=>{
+    setSelectedImage(product.medias[0])
+  }, [product])
   return (
     <div>
       <div className="mb-4">
-        <RoundedImage src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5575/207591898_820974238535060_8557725586980579605_n.jpg"} alt="image" />
+        <RoundedImage src={selectedImage.link} alt={"image de " + product.name} />
       </div>
-      <Thumbnails thumbnails={thumbnails || []} />
+      <Thumbnails
+        medias={medias}
+        selectedMedia={selectedImage}
+        selectThumbnail={(media) => {
+          setSelectedImage(media);
+        }}
+      />
     </div>
   );
 }
 
-function ProductDetail({ company, product }) {
-  company = {
-    name: "MATANGA Shoes",
-    description: "Une marque de fabrication de chaussures aux motifs et designs africains",
-    logo: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5605/logo_matanga.png",
-  };
-
+function ProductDetail({ company, product, recommandations }) {
   const [quantity, setQuantity] = React.useState(1);
 
   return (
@@ -158,13 +163,15 @@ function ProductDetail({ company, product }) {
       <SectionContainer style={{ marginTop: "1rem!important" }}>
         <div className="row">
           <div className="col-md-6 py-4">
-            <ImagesManager />
+            <ImagesManager product={product} />
           </div>
           <div className="col-md-6 py-4">
-            <ProductName>Double Monk Slip-sneaker</ProductName>
-            <ProductPrice>35 000 FCFA</ProductPrice>
+            <ProductName>{product.name}</ProductName>
+            <ProductPrice>
+              {product.price} {company.currency.symbol}
+            </ProductPrice>
             <br />
-            <ProductVariants variants={[]} />
+            {product.variants && <ProductVariants variants={product.variants} />}
             <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
             <DesignedButton full onClick={() => {}} secondary={true}>
               Add to cart
@@ -181,32 +188,36 @@ function ProductDetail({ company, product }) {
           </div>
         </div>
         <Accordion title={"Description"}>
-          <div style={{ textAlign: "justify" }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vestibulum, lacus eget consequat mollis, felis neque dictum neque, quis venenatis purus libero vitae elit. Nunc in purus id augue imperdiet laoreet porttitor a tortor. In finibus dui id lacus tristique, et convallis sapien elementum. Donec metus turpis, viverra sit amet
-            facilisis eget, elementum vel ligula. Morbi posuere metus non neque pharetra, a egestas diam scelerisque. In suscipit felis eget turpis efficitur tincidunt.
-            <br />
-            <br />
-            Mauris non diam tellus. Nunc lobortis quam vel sollicitudin elementum. Praesent ac nunc tincidunt enim ultricies vehicula sed et dui. Vivamus nunc neque, ultricies in nibh a, tincidunt accumsan erat. Aliquam sed elit id sem condimentum consectetur fermentum id ante. Aliquam id dui vel turpis sodales ultrices. Proin laoreet augue nec est
-            suscipit interdum. Praesent porta, justo sit amet consectetur cursus, dui enim aliquet turpis, ut hendrerit ex eros vitae mauris. Vestibulum id dolor quis elit pharetra rutrum in at ipsum.
-            <br />
-            <br />
-            Aliquam maximus, diam at ornare malesuada, libero ex tincidunt lacus, et porttitor nisi justo nec ligula. Quisque a porta mauris. Ut dignissim euismod pharetra. Donec id neque sed enim sodales dapibus id viverra tortor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer tincidunt enim
-            quis volutpat elementum.
-            <br />
-            <br />
-            Sed at consectetur magna, non vehicula metus. Nunc et metus volutpat, tristique lectus sed, euismod metus. Curabitur feugiat mollis quam et vehicula. Vestibulum nec mi vitae erat mattis venenatis. Morbi eleifend accumsan velit at sagittis. Pellentesque varius lectus eu scelerisque eleifend. Curabitur ut leo id ex hendrerit venenatis et
-            id elit.
-            <br />
-            <br />
-            Proin interdum, justo in ullamcorper imperdiet, est lorem fringilla quam, eget malesuada augue urna vel lorem. Mauris vulputate cursus iaculis. Etiam molestie tristique scelerisque. Vivamus finibus sagittis justo, ut ultricies felis commodo id.
-          </div>
+          <div style={{ textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: product.description }} />
         </Accordion>
         <Accordion title={"Customer reviews"}></Accordion>
       </SectionContainer>
 
-      <Recommandations />
+      <Recommandations products={recommandations} currency={company.currency.symbol}/>
     </Main>
   );
+}
+
+export async function getServerSideProps({ req, res, resolvedUrl, query }) {
+  const { product_id: slug } = query;
+  let customer_host = "https://" + req.headers.host;
+  let result = await fetch(`${genuka_api_2021_10}/companies/byurl?url=${customer_host}`);
+  let company = await result.json();
+
+  result = await fetch(`${genuka_api_2021_10}/companies/${company.id}/products/slug/${slug}`);
+  let product = (await result.json());
+
+  result = await fetch(`${genuka_api_2021_10}/companies/${company.id}/products/${product.id}/similar`);
+  let recommandations = (await result.json()).splice(1,4);
+  // console.log({ product, company, recommandations });
+
+  return {
+    props: {
+      company,
+      product,
+      recommandations
+    },
+  };
 }
 
 export default ProductDetail;

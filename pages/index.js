@@ -8,13 +8,26 @@ import TextAndButton from "../components/sections/TextAndButton";
 import { genuka_api_2021_10 } from "../utils/configs";
 
 
-export default function Home({ company }) {
+export async function getServerSideProps({ req, res, resolvedUrl }) {
+  let customer_host = "https://"+req.headers.host;
+  let result = await fetch(`${genuka_api_2021_10}/companies/byurl?url=${customer_host}`);
+  let company = await result.json()
 
-  company = {
-    name: "MATANGA Shoes",
-    description: "Une marque de fabrication de chaussures aux motifs et designs africains",
-    logo: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5605/logo_matanga.png",
-  };
+  result  = await fetch(`${genuka_api_2021_10}/companies/${company.id}/collections/238`);
+  let collection = await result.json()
+
+  result  = await fetch(`${genuka_api_2021_10}/companies/${company.id}/products/slug/bears-and-sneakers-488`);
+  let product = await result.json()
+
+  
+
+  return {
+    props: {
+      company, collection,product
+    }, 
+  }
+}
+export default function Home({ company, collection, product }) {
 
   if (!company) return <EmptyStore />;
 
@@ -71,17 +84,14 @@ export default function Home({ company }) {
     },
   };
 
-  const product = {};
-  const collection = {};
 
   return (
     <Main company={company}>
-      {/* <Carousel/> */}
-      <ImageAndText datas={{...image_and_text, image_first: true}} />
+      {/* <ImageAndText datas={{...image_and_text, image_first: true}} /> */}
       <Hero heroes={heroes} />
-      <FeaturedCollection collection={collection} />
+      <FeaturedCollection collection={collection} currency={company.currency.symbol}/>
       <ImageAndText  datas={image_and_text} />
-      <FeaturedProduct product={product} />
+      <FeaturedProduct product={product}   currency={company.currency.symbol}/>
       <TextAndButton datas={text_and_button} />
     </Main>
   );

@@ -5,6 +5,7 @@ import Pagination from "../../components/common/Pagination";
 import EmptyStore from "../../components/EmptyStore";
 import Main from "../../components/layout/Main";
 import SectionContainer from "../../components/sections/SectionContainer";
+import { genuka_api_2021_10 } from "../../utils/configs";
 
 const CollectionListContainer = styledComponents.div`
 
@@ -16,35 +17,37 @@ const CollectionDescription = styledComponents.div`
   margin-bottom: 1.5rem;
 `;
 
+
+export async function getServerSideProps({ req, res, resolvedUrl }) {
+  let customer_host = "https://"+req.headers.host;
+  let result = await fetch(`${genuka_api_2021_10}/companies/byurl?url=${customer_host}`);
+  let company = await result.json()
+  result = await fetch(`${genuka_api_2021_10}/companies/${company.id}/collections`);
+  let collections = await result.json()
+  console.log(collections)
+
+  return {
+    props: {
+      company,collections
+    }, 
+  }
+}
 export default function Home({ company, collections = [] }) {
-  company = {
-    name: "MATANGA Shoes",
-    description: "Une marque de fabrication de chaussures aux motifs et designs africains",
-    logo: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5605/logo_matanga.png",
-  };
+  
   let pagination;
   if (!company) return <EmptyStore />;
-
+  console.log(collections)
   return (
     <Main company={company}>
       <SectionContainer>
         <DesignedTitle>Collections</DesignedTitle>
-        <CollectionDescription>Découvrez toutes nos collections 2022</CollectionDescription>
+        <CollectionDescription>Découvrez toutes nos collections</CollectionDescription>
         <CollectionListContainer className="row">
-          {[
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-          ].map((collection) => {
+          {collections.data.map((collection) => {
             return <CollectionCard className="col-lg-4 col-md-6" key={collection.id || Math.random()} collection={collection} />;
           })}
         </CollectionListContainer>
-        <Pagination pagination={pagination} />
+        <Pagination pagination={{...collections.meta, ...collections.links}} />
       </SectionContainer>
     </Main>
   );

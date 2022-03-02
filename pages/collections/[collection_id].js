@@ -1,11 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
-import React from 'react'
-import styledComponents from 'styled-components';
-import DesignedTitle from '../../components/common/DesignedTitle';
-import Pagination from '../../components/common/Pagination';
-import ProductCard from '../../components/common/ProductCard';
-import Main from '../../components/layout/Main'
-import SectionContainer from '../../components/sections/SectionContainer';
+import React from "react";
+import styledComponents from "styled-components";
+import DesignedTitle from "../../components/common/DesignedTitle";
+import Pagination from "../../components/common/Pagination";
+import ProductCard from "../../components/common/ProductCard";
+import Main from "../../components/layout/Main";
+import SectionContainer from "../../components/sections/SectionContainer";
+import { genuka_api_2021_10 } from "../../utils/configs";
 
 const CollectionDescription = styledComponents.div`
   font-size: 1.25rem;
@@ -16,7 +17,6 @@ const CollectionDescription = styledComponents.div`
 const Bloc = styledComponents.div`
     margin-bottom: 4rem;
 `;
-
 
 const RoundedImage = styledComponents.img`
     object-fit: cover;
@@ -32,43 +32,65 @@ const ProductGrid = styledComponents.div`
 
 `;
 
+export async function getServerSideProps({ req, res, resolvedUrl, query }) {
+  const { collection_id } = query;
+  let customer_host = "https://" + req.headers.host;
+  let result = await fetch(`${genuka_api_2021_10}/companies/byurl?url=${customer_host}`);
+  let company = await result.json();
+  let collection , products;
+  if(collection_id === "all"){
+    collection = {
+      name: "Notre catalogue",
+      description: "Retrouvez tous nos produits",
+      medias : [
+        {
+          link : company.logo
+        }
+      ]
+    }
+    result = await fetch(`${genuka_api_2021_10}/companies/${company.id}/products?per_page=12`);
+    products = (await result.json());
+   
+  }else{
+    result = await fetch(`${genuka_api_2021_10}/companies/${company.id}/collections/${collection_id}/minimal`);
+   collection = await result.json();
+   result = await fetch(`${genuka_api_2021_10}/companies/${company.id}/collections/${collection_id}`);
+   products = (await result.json()).products;
+  }
+  console.log({products, company, collection});
 
-function CollectionPage({ company, collection }) {
-     company = {
-       name: "MATANGA Shoes",
-       description: "Une marque de fabrication de chaussures aux motifs et designs africains",
-       logo: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5605/logo_matanga.png",
-     };
+  return {
+    props: {
+      company,
+      collection,
+      products,
+    },
+  };
+}
+
+function CollectionPage({ company, collection, products }) {
+  
   return (
     <Main company={company}>
       <SectionContainer>
         <Bloc className="row align-items-center">
           <div className="col-md-6">
-            <DesignedTitle>Collection Masaï</DesignedTitle>
-            <CollectionDescription>Comme un hommage à l'un des peuples les plus créatifs, Résilients et courageux face au changement permanent du monde et de nos sociétés. À une telle Authencite nous dedions une collection à acquérir comme des pièces d'histoire.</CollectionDescription>
+            <DesignedTitle>{collection.name}</DesignedTitle>
+            <CollectionDescription>{collection.description}</CollectionDescription>
           </div>
           <div className="col-md-6">
-            <RoundedImage src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif"} alt={""} />
+            <RoundedImage src={collection.medias[0].link} alt={"Collection " + collection.name} />
           </div>
         </Bloc>
         <ProductGrid className="row">
-          {[
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-            "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-          ].map((product) => {
-            return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-lg-3"} />;
+          {products.data.map((product) => {
+            return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-lg-3"} currency={company?.currency?.symbol}/>;
           })}
         </ProductGrid>
-        <Pagination />
+        <Pagination pagination={{...products.links,...products.meta }} />
       </SectionContainer>
     </Main>
   );
 }
 
-export default CollectionPage
+export default CollectionPage;
