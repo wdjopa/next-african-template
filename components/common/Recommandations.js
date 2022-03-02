@@ -8,6 +8,8 @@ const Title = styledComponents.h4``;
 const ProductContainer = styledComponents.div``;
 
 function Recommandations(props) {
+  if(!props.products)
+  return <></>
   const { products, currency } = props;
   if(products?.length === 0)
   return <></>
