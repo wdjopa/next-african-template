@@ -9,7 +9,7 @@ const ProductContainer = styledComponents.div``;
 
 function Recommandations(props) {
   const { products, currency } = props;
-  if(products.length === 0)
+  if(products?.length === 0)
   return <></>
   return (
     <SectionContainer {...props}>
