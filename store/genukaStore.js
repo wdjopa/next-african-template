@@ -123,10 +123,10 @@ async function getProduct(dispatch, product_slug) {
   }
 }
 
-async function getProductById(dispatch, company_id, product_id) {
+async function getProductById(dispatch, company_id, product_slug) {
   dispatch({ type: "loading" });
   try {
-    const response = await axios.get(`${genuka_api_2021_10}/companies/${company_id}/products/${product_id}`);
+    const response = await axios.get(`${genuka_api_2021_10}/companies/${company_id}/products/${product_slug}`);
     if (response.data) {
       dispatch({ type: "featured_product_success", payload: response.data });
     } else {
@@ -142,6 +142,9 @@ async function getProductById(dispatch, company_id, product_id) {
     });
   }
 }
+
+
+
 
 function commentReducer(state, action) {
   switch (action.type) {
@@ -170,6 +173,28 @@ function commentReducer(state, action) {
     case "company_success": {
       return { ...state, company: action.payload, loading: { company: false } };
     }
+    case "cart" : {
+      return {...state, cart: action.payload}
+    }
+    case "add_product" : {
+      let cart = state.cart;
+      let productCart = {...action.payload, added_at : new Date()};
+      if(cart.items.map(item => item.product.id).includes(productCart.product.id)){
+        cart.items = cart.items.map(item => {
+          if(item.product.id === productCart.product.id){
+            return {...item, quantity: item.quantity + productCart.quantity}
+          }
+          return item;
+        })
+      }else{
+        cart.items.push(productCart)
+        console.log("Push")
+      }
+      console.log(cart, productCart)
+      localStorage.setItem("cart", JSON.stringify(cart))
+      return {...state, cart}
+    }
+    
     case "error":
       return { ...state, error: action.payload, loading: { company: false } };
     case "loading":
@@ -188,6 +213,12 @@ function GenukaProvider({ children }) {
     loading: { company: false },
     collections: {},
     products: {},
+    cart : (typeof window !== "undefined" && localStorage.getItem("cart") )? JSON.parse(localStorage.getItem("cart")) : {
+      created_at : new Date(),
+      items : [
+
+      ]
+    },
     error: undefined,
     company: undefined,
     collections_list: undefined,

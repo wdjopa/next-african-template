@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import NumberFormat from "react-number-format";
 import styledComponents from "styled-components";
 
 const ProductCardContainer = styledComponents.div`
@@ -37,16 +38,18 @@ const ProductPrice = styledComponents.div`
 `;
 
 function ProductCard(props) {
-    const { product } = props
+    const { product, currencySymbol = "FCFA" } = props;
     return (
       <div {...props} style={{ padding: "1rem", boxSizing: "border-box" }}>
-        <Link href={"/products/1"} passHref>
+        <Link href={"/products/" + product.slug} passHref>
           <ProductCardContainer>
             <ImageContainer>
-              <Image src={product} alt={"Chaussure rhino"} />
+              <Image src={product?.medias?.length > 0 ? product.medias[0].thumb : ""} alt={"Image du produit " + product.name} />
             </ImageContainer>
-            <ProductName>Rhino</ProductName>
-            <ProductPrice>25.000 FCFA</ProductPrice>
+            <ProductName>{product.name}</ProductName>
+            <ProductPrice>
+              <NumberFormat thousandsGroupStyle="thousand" value={product.price} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + currencySymbol} />
+            </ProductPrice>
           </ProductCardContainer>
         </Link>
       </div>

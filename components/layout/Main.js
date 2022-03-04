@@ -12,19 +12,11 @@ function Main({ company, children, head }) {
   useEffect(() => {
     setGlobalStyle({ ...globalStyle, "--primary-color": "#348989", "--secondary-color": "#D31B51" });
   }, [company]);
-
-  // Sticky Menu Area
-  //   useEffect(() => {
-  //     window.addEventListener("scroll", isSticky);
-  //     return () => {
-  //       window.removeEventListener("scroll", isSticky);
-  //     };
-  //   });
   
   return (
     <div style={globalStyle}>
       <Head>{head ? head : <title>Home</title>}</Head>
-      <Announcement text={"Livraison offert à partir de 50.000 FCFA d'achat. Jusqu'au 30/02/2022"} visible={true} />
+      <Announcement text={"Livraison offerte à partir de 50.000 FCFA d'achat. Jusqu'au 30/02/2022"} visible={true} />
       <Header company={company} />
       <div className="container">{children}</div>
       <Footer company={company} />

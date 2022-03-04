@@ -43,7 +43,7 @@ function Header(props) {
         <Menu className="d-none d-lg-flex" />
       </div>
       <div className="d-none d-lg-flex">
-        <CurrencySelector />
+        {/* <CurrencySelector /> */}
         <AccountHeader />
         <CartHeader />
       </div>

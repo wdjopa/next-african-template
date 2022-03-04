@@ -17,13 +17,16 @@ const Paragraph = styledComponents.p`
 
 function TextAndButton({ datas }) {
   const { title, paragraph, button } = datas;
+  console.log({ button });
   return (
     <SectionContainer style={{ textAlign: "center" }}>
       <Title>{title}</Title>
       <Paragraph>{paragraph}</Paragraph>
-      <a href={button.link}>
-        <DesignedButton>{button.text}</DesignedButton>
-      </a>
+      {button.link && (
+        <a href={button.link}>
+          <DesignedButton>{button.text}</DesignedButton>
+        </a>
+      )}
     </SectionContainer>
   );
 }

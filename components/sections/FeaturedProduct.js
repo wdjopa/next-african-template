@@ -1,6 +1,9 @@
 import Link from "next/link";
 import React from "react";
+import NumberFormat from "react-number-format";
 import styledComponents from "styled-components";
+import { ProductVariants } from "../../pages/products/[product_slug]";
+import { getProduct, useGenukaDispatch } from "../../store/genukaStore";
 import DesignedButton from "../common/DesignedButton";
 import QuantitySelector from "../common/QuantitySelector";
 import Variant from "../common/Variant";
@@ -34,69 +37,60 @@ const TransparentLink = styledComponents.div`
   font-size: 1.5rem;
 `;
 
-function ProductVariants({ variants }) {
-  return (
-    <>
-      <Variant
-        variant={{
-          name: "Color",
-          options: [
-            {
-              value: "#AD1E44",
-            },
-            {
-              value: "#348989",
-            },
-            {
-              value: "#0C7FEA",
-            },
-          ],
-        }}
-      />
-      <Variant
-        variant={{
-          name: "Size",
-          options: [
-            {
-              value: "37",
-            },
-            {
-              value: "39",
-            },
-            {
-              value: "41",
-            },
-            {
-              value: "42",
-            },
-            {
-              value: "45",
-            },
-          ],
-        }}
-      />
-    </>
-  );
-}
-
-
-function FeaturedProduct({ product }) {
+function FeaturedProduct({ product_id, currencySymbol }) {
+  const [product, setProduct] = React.useState();
   const [quantity, setQuantity] = React.useState(1);
+  const [loading, setLoading] = React.useState(true);
+
+   const dispatch = useGenukaDispatch();
+   const [productCart, setProductCart] = React.useState();
+
+   React.useEffect(() => {
+     if(productCart)
+     setProductCart({ ...productCart, quantity });
+   }, [quantity]);
+
+   React.useEffect(() => {
+     if(product)
+     setProductCart({ product, price: product.price, quantity: 1 });
+   }, [product]);
+
+  async function getProduct() {
+    let result = await fetch(`https://api.genuka.com/2021-10/products/${product_id}`);
+    let p = await result.json();
+    setProduct(p);
+    setLoading(false);
+  }
+
+  React.useEffect(() => {
+    if (product_id) {
+      setLoading(true);
+      getProduct();
+    }
+  }, [product_id]);
+
+  if(loading)
+  return <></>
   return (
     <SectionContainer>
       <div className="row">
         <div className="col-md-6 py-4">
-          <RoundedImage src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5575/207591898_820974238535060_8557725586980579605_n.jpg"} alt="image" />
+          <RoundedImage src={product.medias[0].link} alt={"Image du produit " + product.name} />
         </div>
-        <div className="col-md-6 p-4">
-          <ProductName>Double Monk Slip-sneaker</ProductName>
-          <ProductPrice>35 000 FCFA</ProductPrice>
+        <div className="col-md-6 p-4 d-flex flex-column justify-content-center">
+          <ProductName>{product.name}</ProductName>
+          <ProductPrice>
+            <NumberFormat thousandsGroupStyle="thousand" value={product.price} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + currencySymbol} />
+          </ProductPrice>
           <ProductVariants variants={product.variants} />
           <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
-          <DesignedButton full onClick={() => {}} secondary={true}>
+          <DesignedButton full onClick={() => {
+                dispatch({ type: "add_product", payload: productCart });
+
+          }} secondary={true}>
             Add to cart
           </DesignedButton>
-          <Link href="/products/2" passHref style={{ marginTop: "1rem", display: "block" }}>
+          <Link href={"/products/" + product.slug} passHref style={{ marginTop: "1rem", display: "block" }}>
             <TransparentLink>
               <span>Go to product page</span>
               <Arrow />

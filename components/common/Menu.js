@@ -48,21 +48,21 @@ function Menu(props) {
         <Li className={router.pathname == "/" ? "active" : ""}>
           <Link href="/">Home</Link>
         </Li>
-        <Li className={router.pathname == "/about-us" ? "active" : ""}>
+        {/* <Li className={router.pathname == "/about-us" ? "active" : ""}>
           <Link href="/about-us">About</Link>
-        </Li>
+        </Li> */}
         <Li className={router.pathname == "/collections" ? "active" : ""}>
           <Link href="/collections">Collections</Link>
         </Li>
-        <Li className={router.pathname == "/collections/[collection_id]" || router.pathname == "/products/[product_id]" ? "active" : ""}>
-          <Link href="/collections/all">Catalog</Link>
+        <Li className={router.pathname == "/collections/[collection_id]" || router.pathname == "/products/[product_slug]" ? "active" : ""}>
+          <Link href="/products">Catalog</Link>
         </Li>
-        <Li className={router.pathname == "/blogs/*" ? "active" : ""}>
+        {/* <Li className={router.pathname == "/blogs/*" ? "active" : ""}>
           <Link href="/blogs">Blogs</Link>
-        </Li>
-        <Li className={router.pathname == "/contact" ? "active" : ""}>
+        </Li> */}
+        {/* <Li className={router.pathname == "/contact" ? "active" : ""}>
           <Link href="/contact">Contact</Link>
-        </Li>
+        </Li> */}
       </Ul>
     </Container>
   );

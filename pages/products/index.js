@@ -32,39 +32,36 @@ const ProductGrid = styledComponents.div`
 `;
 
 export async function getServerSideProps(context) {
-  let company, collection, products, company_url;
   const { req, query, res, asPath, pathname } = context;
-  const { collection_id } = query;
-  company_url = "https://" + req.headers.host;
-  let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
+  let company_url = "https://" + req.headers.host;
+  
+  let company,  products, result;
+  
+  result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
   company = await result.json();
 
-  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/collections/${collection_id}/minimal`);
-  collection = await result.json();
-
-  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/collections/${collection_id}`);
-  products = (await result.json()).products;
+  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/products?per_page=12`);
+  products = (await result.json());
 
   return {
     props: {
       company,
-      collection,
       products,
     }, // will be passed to the page component as props
   };
 }
 
-function CollectionPage({ company, collection, products }) {
+function CatalogPage({ company, collection, products }) {
   return (
     <Main company={company}>
       <SectionContainer>
         <Bloc className="row align-items-center">
           <div className="col-md-6">
-            <DesignedTitle>{collection.name}</DesignedTitle>
-            <CollectionDescription>{collection.description}</CollectionDescription>
+            <DesignedTitle>Notre catalogue</DesignedTitle>
+            <CollectionDescription>Découvrez tous nos produits</CollectionDescription>
           </div>
           <div className="col-md-6">
-            <RoundedImage src={collection.medias.length > 0 ? collection.medias[0].link : company.logo} alt={"Image de la collection " + collection.name} />
+            <RoundedImage src={company.logo} alt={"Logo de l'entreprise "+company.name } />
           </div>
         </Bloc>
         <ProductGrid className="row">
@@ -78,4 +75,4 @@ function CollectionPage({ company, collection, products }) {
   );
 }
 
-export default CollectionPage;
+export default CatalogPage;

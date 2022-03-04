@@ -12,12 +12,22 @@ const Center = styledComponents.div`
     margin: 15rem 0;
 `;
 
-function Custom404({ company }) {
-  company = {
-    name: "MATANGA Shoes",
-    description: "Une marque de fabrication de chaussures aux motifs et designs africains",
-    logo: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5605/logo_matanga.png",
+
+export async function getServerSideProps(context) {
+  let company, company_url;
+  const { req, query, res, asPath, pathname } = context;
+  company_url = "https://" + req.headers.host;
+  let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
+  company = await result.json();
+
+  return {
+    props: {
+      company,
+    },
   };
+}
+function Custom404({ company }) {
+ 
   if (!company) return <EmptyStore />;
   return (
     <Main company={company}>

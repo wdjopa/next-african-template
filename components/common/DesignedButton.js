@@ -11,7 +11,7 @@ position: absolute;
 `;
 
 const StyledButton = styledComponents.div`
-
+    user-select: none;
     background: ${(props) => (props.secondary ? "white" : "black")};
     color: ${(props) => (props.secondary ? "black" : "white")};
     border:2px solid black;
@@ -20,7 +20,7 @@ const StyledButton = styledComponents.div`
     align-items: center;
     justify-content:center;
     min-width: 200px;
-    width: ${props => props.full ? "100%" : "auto"};
+    width: ${(props) => (props.full ? "100%" : "auto")};
     min-height: 60px;
     border-radius: 5px;
     box-shadow: 2px 2px 0px black; 
@@ -31,11 +31,18 @@ const StyledButton = styledComponents.div`
     font-size: 1.3rem;
     font-weight: 400;
     padding: 0 3rem;
+    transition: all .3s ease;
+    
+    &:hover{
+      box-shadow: 0px 5px 5px 0px #00000040;
+    }
+    &:active{
+      box-shadow: 0px 2px 2px 0px #00000040;
+    }
 `;
 
 function DesignedButton(props) {
-
-return (
+  return (
     <StyledButton {...props} secondary={props.secondary}>
       {props.children}
       <ZigZag />

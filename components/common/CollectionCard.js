@@ -32,20 +32,24 @@ const CollectionName = styledComponents.h5`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  span{
+    text-transform : uppercase;
+  }
 `;
     
 
 function CollectionCard(props) {
-  const { collection } = props;
+  const { collection, company_logo } = props;
   return (
     <div {...props} style={{ padding: "1rem", boxSizing: "border-box" }}>
-      <Link href={"/collections/1"} passHref>
+      <Link href={"/collections/" + collection.id} passHref>
         <CollectionCardContainer>
           <ImageContainer>
-            <Image src={collection} alt={"Collection masai"} />
+            <Image src={collection.medias.length > 0 ?collection.medias[0].link : company_logo} alt={"Collection "+collection.name} />
           </ImageContainer>
           <CollectionName>
-            <span>MASAÏ</span>
+            <span>{collection.name}</span>
             <Arrow />
           </CollectionName>
         </CollectionCardContainer>

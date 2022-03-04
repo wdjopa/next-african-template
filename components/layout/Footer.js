@@ -19,7 +19,6 @@ const CompanyDescription = styledComponents.div`
   font-size: 14px;
 `;
 
-
 const Ul = styledComponents.ul`
     margin: 0;
     padding: 0;
@@ -44,16 +43,11 @@ const Li = styledComponents.li`
     }
 `;
 
-
 const CopyrightText = styledComponents.div``;
 
-
-function PaymentIcons(){
-  return <div className="d-flex justify-content-center">
-
-  </div>;
+function PaymentIcons() {
+  return <div className="d-flex justify-content-center"></div>;
 }
-
 
 export function Copyright() {
   return (
@@ -71,7 +65,6 @@ export function Copyright() {
 }
 
 function Footer({ company }) {
- 
   return (
     <div className={"container"}>
       <div className={"row"}>
@@ -87,32 +80,32 @@ function Footer({ company }) {
               <Link passHref href="/">
                 Home
               </Link>
-              </Li>
+            </Li>
             <Li>
               <Link passHref href="/collections">
                 Collections
               </Link>
-              </Li>
+            </Li>
             <Li>
               <Link passHref href="/catalog">
                 Products
               </Link>
-              </Li>
-            <Li>
+            </Li>
+            {/* <Li>
               <Link passHref href="/blogs">
                 Blog
               </Link>
-              </Li>
-            <Li>
+            </Li> */}
+            {/* <Li>
               <Link passHref href="/contact">
                 Contact
               </Link>
-              </Li>
+            </Li>
             <Li>
               <Link passHref href="/faq">
                 FAQ
               </Link>
-              </Li>
+            </Li> */}
           </Ul>
         </div>
         <div className="   col-md-4">
@@ -122,27 +115,27 @@ function Footer({ company }) {
               <Link passHref href="/legals/politique-de-remboursement">
                 Politique de remboursement
               </Link>
-              </Li>
+            </Li>
             <Li>
               <Link passHref href="/legals/politique-de-remboursement">
                 Politique de livraison
               </Link>
-              </Li>
+            </Li>
             <Li>
               <Link passHref href="/legals/politique-de-remboursement">
                 Conditions générales d'utilisation
               </Link>
-              </Li>
+            </Li>
             <Li>
               <Link passHref href="/legals/politique-de-remboursement">
                 Déclaration de confidentialité
               </Link>
-              </Li>
+            </Li>
             <Li>
               <Link passHref href="/legals/politique-de-remboursement">
                 Mentions légales
               </Link>
-              </Li>
+            </Li>
           </Ul>
         </div>
       </div>

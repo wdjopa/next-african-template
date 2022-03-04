@@ -12,26 +12,38 @@ const ProductGrid = styledComponents.div`
 
 `;
 
-function FeaturedCollection({ collection }) {
+function FeaturedCollection({ collection_id, company_id, currencySymbol }) {
+  const [collection, setCollection] = React.useState();
+  const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  async function getCollection() {
+    let result = await fetch(`https://api.genuka.com/2021-10/companies/${company_id}/collections/${collection_id}?per_page=8`);
+    let c = await result.json();
+    setCollection(c.collection);
+    setProducts(c.products);
+    setLoading(false);
+  }
+
+  React.useEffect(() => {
+    if (collection_id) {
+      setLoading(true);
+      getCollection();
+    }
+  }, [collection_id]);
+
+  if (loading) return <></>;
+
   return (
     <SectionContainer>
-      <Title>Collection Safari</Title>
+      <Title>Collection {collection.name}</Title>
       <ProductGrid className="row">
-        {[
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5576/139637656_227061792242590_6392024906148364466_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5573/274689966_1348653875561680_5019483340261502650_n.jfif",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5577/122597167_924226787985107_8132469846152227844_n.jpg",
-          "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5569/248459132_259275452803119_4838615338672377152_n.jpg",
-        ].map((product) => {
-          return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-lg-3"} />;
+        {products.data.map((product) => {
+          return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-lg-3"} currencySymbol={currencySymbol} />;
         })}
       </ProductGrid>
       <div className="text-center mt-5">
-        <a href={"/collections/" + collection.id || "/collections/all"}>
+        <a href={"/collections/" + collection.id}>
           <DesignedButton>SHOW ALL</DesignedButton>
         </a>
       </div>
