@@ -30,7 +30,7 @@ function Custom404({ company }) {
  
   if (!company) return <EmptyStore />;
   return (
-    <Main company={company}>
+    // <Main company={company}>
       <SectionContainer>
         <Center>
           <DesignedTitle>
@@ -38,7 +38,7 @@ function Custom404({ company }) {
           </DesignedTitle>
         </Center>
       </SectionContainer>
-    </Main>
+    // </Main>
   );
 }
 
