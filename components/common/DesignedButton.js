@@ -3,7 +3,7 @@ import styledComponents from "styled-components";
 
 const ZigZag = styledComponents.div`
 position: absolute;
- bottom: -45px;
+ top: 80%;
  height: 100%;
  width: 100%;
  background-repeat-y: no-repeat !important;
@@ -33,12 +33,19 @@ const StyledButton = styledComponents.div`
     padding: 0 3rem;
     transition: all .3s ease;
     
+
     &:hover{
       box-shadow: 0px 5px 5px 0px #00000040;
     }
     &:active{
       box-shadow: 0px 2px 2px 0px #00000040;
     }
+
+    ${props => props.isLoading ? `
+    background: #AAA;
+    color: #777;
+    border:2px solid  #AAA;
+    `: ""} 
 `;
 
 function DesignedButton(props) {

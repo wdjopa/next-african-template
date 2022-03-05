@@ -86,7 +86,7 @@ function FeaturedProduct({ product_id, currencySymbol }) {
           <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
           <DesignedButton full onClick={() => {
                 dispatch({ type: "add_product", payload: productCart });
-
+            dispatch({type: "notification", payload: "Added to cart "})
           }} secondary={true}>
             Add to cart
           </DesignedButton>

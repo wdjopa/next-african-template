@@ -1,7 +1,8 @@
 import React from "react";
 import styledComponents from "styled-components";
 import UserIcon from "../icons/UserIcon";
-
+import Link from "next/link";
+import { useGenukaState } from "../../store/genukaStore";
 const Container = styledComponents.div`
     ${(props) => (props.mobile ? "" : "margin-left: 1rem;")}
 
@@ -13,11 +14,17 @@ const ActionIcon = styledComponents.div`
 `;
 function AccountHeader(props) {
   const { mobile } = props;
+  const { user } = useGenukaState();
   return (
     <Container mobile={mobile}>
-      <ActionIcon>
-        <UserIcon width={"20"} height={"20"} size={512} />
-      </ActionIcon>
+      <Link href="/account" passHref>
+        <div style={{display: "flex",alignItems:"end"}}>
+          {!mobile && user && "Hello " + user.first_name}
+          <ActionIcon>
+            <UserIcon width={"20"} height={"20"} style={{ marginLeft: "1rem" }} size={512} />
+          </ActionIcon>
+        </div>
+      </Link>
     </Container>
   );
 }

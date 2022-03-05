@@ -9,11 +9,11 @@ import styledComponents from "styled-components";
 import SideBar from "./SideBar";
 import Link from "next/link";
 
-const Logo = styledComponents.img`
+const Logo = React.memo(styledComponents.img`
     height: 80px;
     min-width: 50px;
     border-radius: 100%;
-`;
+`);
 
 const HeaderContainer = styledComponents.div`
     position: sticky;

@@ -69,10 +69,10 @@ function CollectionPage({ company, collection, products }) {
         </Bloc>
         <ProductGrid className="row">
           {products.data.map((product) => {
-            return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-lg-3"} currencySymbol={company.currency.symbol} />;
+            return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-xl-3"} currencySymbol={company.currency.symbol} />;
           })}
         </ProductGrid>
-        <Pagination />
+        <Pagination pagination={{ ...products.links , ...products.meta}} />
       </SectionContainer>
     </Main>
   );

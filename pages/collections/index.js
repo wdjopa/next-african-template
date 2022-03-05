@@ -24,7 +24,8 @@ export async function getServerSideProps(context) {
   let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
   company = await result.json();
 
-  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/collections`);
+  const { per_page = 9, page = 1 } = query;
+  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/collections?per_page=${per_page}&page=${page}`);
   collections = await result.json();
 
   return {
@@ -50,7 +51,7 @@ export default function Home({ company, collections = [] }) {
             return <CollectionCard className="col-lg-4 col-md-6" key={collection.id || Math.random()} collection={collection} company_logo={company.logo}/>;
           })}
         </CollectionListContainer>
-        <Pagination pagination={pagination} />
+        <Pagination pagination={{...collections.links, ...collections.meta}} />
       </SectionContainer>
     </Main>
   );

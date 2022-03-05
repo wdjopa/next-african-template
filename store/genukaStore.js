@@ -1,6 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { genuka_api_2021_10 } from "../utils/configs";
+import { deleteCookie, setCookie } from "../utils/cookies";
 
 const GenukaStateContext = React.createContext();
 const GenukaDispatchContext = React.createContext();
@@ -143,8 +144,162 @@ async function getProductById(dispatch, company_id, product_slug) {
   }
 }
 
+async function registerUser(dispatch, company_id, user) {
+  try {
+    let data = {
+      ...user,
+      fromApi: true,
+      company_id: company_id,
+    };
 
+    const response = await axios.post(`${genuka_api_2021_10}/clients/register`, data);
+    if (response.data) {
+      dispatch({ type: "user_register", payload: { ...response.data.user, access_token: response.data.access_token } });
+    } else {
+      dispatch({
+        type: "error",
+        payload: "An error occur when login user",
+      });
+    }
+  } catch (error) {
+    if (error.response.status === 403) {
+      dispatch({ type: "notification", payload: error.response.data.message });
+    }
+    dispatch({
+      type: "error",
+      payload: "An error occur when login user",
+    });
+  }
+}
 
+async function loginUser(dispatch, company_id, { email, password }) {
+  try {
+    let data = {
+      password,
+      fromApi: true,
+      company_id: company_id,
+    };
+    if (email.includes("@")) {
+      data.email = email;
+    } else {
+      data.tel = email;
+    }
+    const response = await axios.post(`${genuka_api_2021_10}/clients/login`, data);
+    if (response.data) {
+      dispatch({ type: "user_login", payload: { ...response.data.user, access_token: response.data.access_token } });
+    } else {
+      dispatch({
+        type: "error",
+        payload: "An error occur when login user",
+      });
+    }
+  } catch (error) {
+    if (error.response.status === 403) {
+      dispatch({ type: "notification", payload: "Email/Tel or password invalid" });
+    }
+    dispatch({
+      type: "error",
+      payload: "An error occur when login user",
+    });
+  }
+}
+
+async function getAddresses(dispatch) {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.get(`${genuka_api_2021_10}/customers/addresses`, { headers: { Authorization: "Bearer " + token } });
+    if (response.data) {
+      dispatch({ type: "list_addresses", payload: response.data });
+    } else {
+      dispatch({
+        type: "error",
+        payload: "An error occur when getting addresses",
+      });
+    }
+  } catch (error) {
+    dispatch({
+      type: "error",
+      payload: "An error occur when getting addresses",
+    });
+  }
+}
+
+async function loginWithToken(dispatch) {
+  const token = localStorage.getItem("access_token");
+  try {
+    if (token) {
+      const response = await axios.get(`${genuka_api_2021_10}/user`, { headers: { Authorization: "Bearer " + token } });
+      if (response.data) {
+        dispatch({ type: "user_login", payload: response.data });
+      }
+    }
+  } catch (error) {
+    dispatch({
+      type: "error",
+      payload: "An error occur when getting addresses",
+    });
+  }
+}
+
+async function placeOrder(dispatch, cart, company) {
+  const token = localStorage.getItem("access_token");
+  dispatch({ type: "loading", payload: { order: true } });
+  console.log("Place an order > ", token);
+  try {
+    let subtotal = cart.items.reduce((total, currentItem) => {
+      return total + currentItem.price * currentItem.quantity;
+    }, 0);
+    if (token) {
+      const response = await axios.post(
+        `${genuka_api_2021_10}/commands`, // TO REPLACE WITH THE UPDATE
+        {
+          client_email: cart.customer.email,
+          customer_details: cart.customer,
+          company_id: company.id,
+          subtotal,
+          shipping: company.shipping_fee || 0,
+          total: subtotal + (company.shipping_fee || 0),
+          note: cart.note,
+          source: "Website",
+          payment: {
+            date: new Date(),
+            mode: cart.payment_mode.slug,
+            state: 0,
+          },
+          shipping: {
+            address: cart.shipping_address,
+            address_type: 2,
+            date: Date.now(),
+            mode: "shipping",
+            state: 0,
+          },
+          produits: cart.items.map((item) => {
+            return {
+              id: item.product.id,
+              quantity: item.quantity,
+              price: item.price,
+              add_to_cart_date: item.add_to_cart_date,
+              properties: item.properties,
+              complement: item.complement,
+              note: item.note,
+            };
+          }),
+        },
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      if (response.data) {
+        dispatch({ type: "loading", payload: undefined });
+        dispatch({ type: "order_placed", payload: response.data });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    dispatch({
+      type: "error",
+      payload: "An error occur when getting addresses",
+    });
+  }
+}
 
 function commentReducer(state, action) {
   switch (action.type) {
@@ -173,28 +328,70 @@ function commentReducer(state, action) {
     case "company_success": {
       return { ...state, company: action.payload, loading: { company: false } };
     }
-    case "cart" : {
-      return {...state, cart: action.payload}
+    case "cart": {
+      localStorage.setItem("cart", JSON.stringify(action.payload));
+      return { ...state, cart: action.payload, current_order: undefined };
     }
-    case "add_product" : {
+    case "add_product": {
       let cart = state.cart;
-      let productCart = {...action.payload, added_at : new Date()};
-      if(cart.items.map(item => item.product.id).includes(productCart.product.id)){
-        cart.items = cart.items.map(item => {
-          if(item.product.id === productCart.product.id){
-            return {...item, quantity: item.quantity + productCart.quantity}
+      let productCart = { ...action.payload, add_to_cart_date: new Date(), note: "", complement: "" };
+      if (cart.items.map((item) => item.product.id).includes(productCart.product.id)) {
+        cart.items = cart.items.map((item) => {
+          if (item.product.id === productCart.product.id) {
+            return { ...item, quantity: item.quantity + productCart.quantity };
           }
           return item;
-        })
-      }else{
-        cart.items.push(productCart)
-        console.log("Push")
+        });
+      } else {
+        cart.items.push(productCart);
+        console.log("Push");
       }
-      console.log(cart, productCart)
-      localStorage.setItem("cart", JSON.stringify(cart))
-      return {...state, cart}
+      console.log(cart, productCart);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      return { ...state, cart };
     }
-    
+
+    case "user_login": {
+      let notifications = state.notifications;
+      if (action.payload.access_token) {
+        localStorage.setItem("access_token", action.payload.access_token);
+        setCookie("access_token", action.payload.access_token);
+        notifications = [...state.notifications, "Welcome back " + action.payload.first_name];
+      }
+      return { ...state, user: action.payload, isLogged: true, notifications };
+    }
+    case "user_register": {
+      console.log(action.payload)
+      let notifications = state.notifications;
+      if (action.payload.access_token) {
+        localStorage.setItem("access_token", action.payload.access_token);
+        setCookie("access_token", action.payload.access_token);
+        notifications = [...state.notifications, "Welcome  " + action.payload.first_name];
+      }
+      return { ...state, user: action.payload, isLogged: true, notifications };
+    }
+    case "list_addresses": {
+      return { ...state, addresses: action.payload };
+    }
+    case "order_placed": {
+      let cart = {
+        created_at: new Date(),
+        items: [],
+      };
+      localStorage.setItem("cart", JSON.stringify(cart));
+      return { ...state, cart, current_order: action.payload, notifications: [...state.notifications, "Order " + action.payload.reference + " with success."] };
+    }
+    case "logout": {
+      localStorage.removeItem("access_token");
+      deleteCookie("access_token");
+      return { ...state, isLogged: false, user: undefined };
+    }
+    case "notification": {
+      return { ...state, notifications: [...state.notifications, action.payload] };
+    }
+    case "notifications": {
+      return { ...state, notifications: action.payload };
+    }
     case "error":
       return { ...state, error: action.payload, loading: { company: false } };
     case "loading":
@@ -211,14 +408,18 @@ function commentReducer(state, action) {
 function GenukaProvider({ children }) {
   const [state, dispatch] = React.useReducer(commentReducer, {
     loading: { company: false },
+    notifications: [],
+    isLogged: false,
+    user: undefined,
     collections: {},
     products: {},
-    cart : (typeof window !== "undefined" && localStorage.getItem("cart") )? JSON.parse(localStorage.getItem("cart")) : {
-      created_at : new Date(),
-      items : [
-
-      ]
-    },
+    cart:
+      typeof window !== "undefined" && localStorage.getItem("cart")
+        ? JSON.parse(localStorage.getItem("cart"))
+        : {
+            created_at: new Date(),
+            items: [],
+          },
     error: undefined,
     company: undefined,
     collections_list: undefined,
@@ -260,4 +461,4 @@ function useGenukaDispatch() {
   return context;
 }
 
-export { GenukaProvider, useGenukaState, useGenukaDispatch, getCompany, getCompanyById, getCollection, getProduct, getProductById, getPaginatedCollections, getCollectionProducts };
+export { GenukaProvider, useGenukaState, useGenukaDispatch, getCompany, getCompanyById, getCollection, getProduct, getProductById, getPaginatedCollections, getCollectionProducts, loginUser, registerUser, getAddresses, loginWithToken, placeOrder };

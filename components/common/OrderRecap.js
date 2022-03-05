@@ -1,6 +1,8 @@
 import Link from "next/link";
 import React from "react";
+import NumberFormat from "react-number-format";
 import styledComponents from "styled-components";
+import { useGenukaState } from "../../store/genukaStore";
 import Divider from "./Divider";
 
 const Title = styledComponents.h3`
@@ -38,6 +40,7 @@ const PriceValue = styledComponents.div`
 const Image = styledComponents.img`
     border-radius: 4px;
     object-fit: cover;
+    object-position: center center;
     max-width: 100%;
     max-height: 5rem;
     margin-bottom: 1rem;
@@ -77,31 +80,67 @@ const ProductVariants = styledComponents.small`
 `;
 
 function OrderRecap(props) {
+  const { cart, company } = useGenukaState();
+  const subtotal = cart.items.reduce((total, currentItem) => {
+    return total + currentItem.price * currentItem.quantity;
+  }, 0);
+  const discount = 0;
+
+  if (!company ) return <></>;
   return (
     <Container {...props}>
       <Title>Récapitulatif de la commande</Title>
-      <ProductLine className="row">
-        <div className="col-3">
-          <ImageContainer>
-            <Image src={"https://bucket-my-store.s3.eu-west-3.amazonaws.com/5570/274607836_484834773151976_5519080402532895223_n.jfif"} alt={"Image de chaussure"} />
-          </ImageContainer>
-        </div>
-        <ProductInformations className="col-9">
-          <ProductName href="/products/2" passHref>
-            MATANGA QUATRO UNISEXE
-          </ProductName>
-          <ProductPrice>30.000 FCFA</ProductPrice>
-          <QuantityCounter>Quantity : 99</QuantityCounter> 
-          <ProductVariants>Motif 2 / 35</ProductVariants>
-        </ProductInformations>
-      </ProductLine>
+      <Link href="/checkout" passHref>
+        <>
+          {cart.shipping_address && (
+            <div className="my-2">
+              <strong>{cart.shipping_address?.label}</strong>
+              <br />
+              {cart.shipping_address?.given_name} {cart.shipping_address?.family_name} ({cart.shipping_address?.attributes?.tel}
+              )
+              <br />
+              {cart.shipping_address?.street}, {cart.shipping_address?.city},<br /> {cart.shipping_address?.postal_code} {cart.shipping_address?.country}
+            </div>
+          )}
+        </>
+      </Link>
+      <Divider />
+      {cart.items.map((item) => {
+        return (
+          <ProductLine key={item.product.id} className="row">
+            <div className="col-3">
+              <ImageContainer>
+                <Image src={item.product.medias[0].thumb} alt={"Image de " + item.product.name} />
+              </ImageContainer>
+            </div>
+            <ProductInformations className="col-9">
+              <ProductName href={"/products/" + item.product.slug} passHref>
+                {item.product.name}
+              </ProductName>
+              <ProductPrice>
+                <NumberFormat thousandsGroupStyle="thousand" value={item.price} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
+              </ProductPrice>
+              <QuantityCounter>Quantity : {item.quantity}</QuantityCounter>
+              <ProductVariants key={Math.random()}>
+                {item.properties &&
+                  Object.keys(item.properties)
+                    .map((key) => {
+                      return item.properties[key];
+                    })
+                    .join(" / ")}
+              </ProductVariants>
+            </ProductInformations>
+          </ProductLine>
+        );
+      })}
+
       <PricesBox className="col-md-12">
         <PriceLine className="row">
           <PriceLabel className="col-md-6" style={{ textAlign: "left" }}>
             Subtotal
           </PriceLabel>
           <PriceValue className="col-md-6" style={{ textAlign: "right" }}>
-            30.000 FCFA
+            <NumberFormat thousandsGroupStyle="thousand" value={subtotal} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
           </PriceValue>
         </PriceLine>
         <PriceLine className="row">
@@ -109,7 +148,7 @@ function OrderRecap(props) {
             Discount
           </PriceLabel>
           <PriceValue className="col-md-6" style={{ textAlign: "right" }}>
-            30.000 FCFA
+            <NumberFormat thousandsGroupStyle="thousand" value={discount} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
           </PriceValue>
         </PriceLine>
         <PriceLine className="row">
@@ -117,7 +156,7 @@ function OrderRecap(props) {
             Shipping
           </PriceLabel>
           <PriceValue className="col-md-6" style={{ textAlign: "right" }}>
-            30.000 FCFA
+            <NumberFormat thousandsGroupStyle="thousand" value={company.shipping_fee || 0} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
           </PriceValue>
         </PriceLine>
       </PricesBox>
@@ -127,7 +166,7 @@ function OrderRecap(props) {
           Total
         </PriceLabel>
         <PriceValue className="col-md-6" style={{ textAlign: "right", fontSize: "1.8rem" }}>
-          90.000 FCFA
+          <NumberFormat thousandsGroupStyle="thousand" value={subtotal + company.shipping_fee - discount} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
         </PriceValue>
       </PriceLine>
     </Container>

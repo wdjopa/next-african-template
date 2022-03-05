@@ -24,6 +24,7 @@ const TextArea = styledComponents.textarea`
     background: #F5F5F5;
     border: none;
     border-radius: 4px;
+    padding: 1rem;
 `;
 
 const OrderNoteBox = styledComponents.div`
@@ -234,7 +235,9 @@ function CartPage({ company }) {
           <div className="row">
             <OrderNoteBox className="col-md-6">
               <Title>Instructions complémentaires concernant la commande</Title>
-              <TextArea rows={5} />
+              <TextArea rows={5} onChange={(e)=>{
+                dispatch({type: "cart", payload: {...cart, note : e.target.value}})
+              }} />
             </OrderNoteBox>
             <PricesBox className="col-md-6">
               <PriceLine className="row">
@@ -245,13 +248,13 @@ function CartPage({ company }) {
                   <NumberFormat
                     thousandsGroupStyle="thousand"
                     value={cart.items.reduce((total, currentItem) => {
-                      return total + currentItem.price;
+                      return total + currentItem.price * currentItem.quantity;
                     }, 0)}
                     decimalSeparator="."
                     displayType="text"
                     thousandSeparator={true}
                     allowNegative={false}
-                    suffix={" "+currencySymbol}
+                    suffix={" " + currencySymbol}
                   />
                 </PriceValue>
               </PriceLine>
@@ -268,14 +271,14 @@ function CartPage({ company }) {
                   <PriceAction>Apply a discount code</PriceAction>
                 </PriceLine>
               </PricesBox>
-              <PriceLine className="row">
+              {/* <PriceLine className="row">
                 <PriceLabel className="col-md-8" style={{ textAlign: "right" }}>
                   Insurance fees
                 </PriceLabel>
                 <PriceValue className="col-md-4" style={{ textAlign: "right" }}>
                   0 {currencySymbol}
                 </PriceValue>
-              </PriceLine>
+              </PriceLine> */}
               <PriceLine className="mt-4 d-flex justify-content-center">
                 <Link href="/checkout" passHref>
                   <DesignedButton>Proceed to checkout</DesignedButton>

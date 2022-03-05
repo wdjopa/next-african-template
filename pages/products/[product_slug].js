@@ -9,7 +9,8 @@ import Variant from "../../components/common/Variant";
 import Share from "../../components/icons/Share";
 import Main from "../../components/layout/Main";
 import SectionContainer from "../../components/sections/SectionContainer";
-import { useGenukaDispatch } from "../../store/genukaStore";
+import { useGenukaDispatch, useGenukaState } from "../../store/genukaStore";
+import Router from "next/router";
 
 const ProductName = styledComponents.h2`
   font-size: 2.5rem;
@@ -140,15 +141,15 @@ function ImagesManager({ medias }) {
 
 function ProductDetail({ company, product, recommandations }) {
   const [quantity, setQuantity] = React.useState(1);
+  const {cart} = useGenukaState()
   const dispatch = useGenukaDispatch();
-  const [productCart, setProductCart] = React.useState({product, price: product.price, quantity})
-
+  const [productCart, setProductCart] = React.useState({ product, price: product.price, quantity });
   React.useEffect(() => {
     setProductCart({ ...productCart, quantity });
   }, [quantity]);
 
   React.useEffect(() => {
-    setProductCart({ product, price: product.price, quantity : 1});
+    setProductCart({ product, price: product.price, quantity: 1 });
   }, [product]);
 
   return (
@@ -170,12 +171,23 @@ function ProductDetail({ company, product, recommandations }) {
               full
               onClick={() => {
                 dispatch({ type: "add_product", payload: productCart });
+                dispatch({ type: "notification", payload: "Added to cart " });
               }}
               secondary={true}
             >
               Add to cart
             </DesignedButton>
-            <DesignedButton full onClick={() => {}} style={{ marginTop: "2rem" }}>
+            <DesignedButton
+              full
+              onClick={() => {
+                dispatch({
+                  type: "cart",
+                  payload: { ...cart, items: [productCart] },
+                });
+                Router.push("/checkout");
+              }}
+              style={{ marginTop: "2rem" }}
+            >
               Buy now
             </DesignedButton>
             <a href="" style={{ display: "inline-block" }}>

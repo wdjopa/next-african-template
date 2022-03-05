@@ -4,6 +4,9 @@ const nextConfig = {
   images: {
     domains: ["localhost", "dashboard.genuka.com", "bucket-my-store.s3.eu-west-3.amazonaws.com", "genuka.com"],
   },
+  experimental: {
+    styledComponents: true,
+  },
 };
 
 module.exports = nextConfig;

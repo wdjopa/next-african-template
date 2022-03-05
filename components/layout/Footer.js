@@ -45,26 +45,75 @@ const Li = styledComponents.li`
 
 const CopyrightText = styledComponents.div``;
 
-function PaymentIcons() {
-  return <div className="d-flex justify-content-center"></div>;
-}
+const ImagePayment = styledComponents.img`
+    height: 30px;
+    margin-left: 15px
+`;
 
-export function Copyright() {
+const PaymentIcons = React.memo(({ company }) => {
+  if (company && company.payment_modes) {
+    let payments = [];
+    Object.keys(company.payment_modes).forEach((payment_mode) => {
+      let payment = company.payment_modes[payment_mode];
+      if (payment_mode === "mobilemoney") {
+        payments.push({
+          payment,
+          slug: "orangemoney",
+        });
+        payments.push({
+          payment,
+          slug: "mtnmomo",
+        });
+      } else if (payment_mode === "card") {
+        payments.push({
+          payment,
+          slug: "visa",
+        });
+        payments.push({
+          payment,
+          slug: "mastercard",
+        });
+        payments.push({
+          payment,
+          slug: "amex",
+        });
+      } else {
+        payments.push({
+          payment,
+          slug: payment_mode,
+        });
+      }
+    });
+    return (
+      <div className="d-flex justify-content-end ">
+        {payments.map((payment_mode) => {
+          return <ImagePayment key={payment_mode.slug} src={"/icons/" + payment_mode.slug + ".png"} alt={"Icone de " + payment_mode.payment.full_name} />;
+        })}
+      </div>
+    );
+  } else {
+    return <></>;
+  }
+});
+
+export function Copyright({ company }) {
   return (
     <div className="row py-4">
-      <div className="col-md-8">
+      <div className="col-md-8 mt-3">
         <CopyrightText>
-          All rights reserved MATANGA 2022. Ecommerce propulsed by <a href="https://genuka.com">Genuka</a>
+          All rights reserved {company && company.name} 2022. Ecommerce propulsed by <a href="https://genuka.com/?ref=matanga">Genuka</a>
         </CopyrightText>
       </div>
-      <div className="col-md-4">
-        <PaymentIcons />
-      </div>
+      {company && (
+        <div className="col-md-4 mt-3">
+          <PaymentIcons company={company} />
+        </div>
+      )}
     </div>
   );
 }
 
-function Footer({ company }) {
+const Footer = React.memo(({ company }) => {
   return (
     <div className={"container"}>
       <div className={"row"}>
@@ -141,9 +190,9 @@ function Footer({ company }) {
       </div>
       <SocialIcons social_networks={[]} />
       <Divider />
-      <Copyright />
+      <Copyright company={company} />
     </div>
   );
-}
+});
 
 export default Footer;

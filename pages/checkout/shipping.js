@@ -61,7 +61,7 @@ function CheckoutPageShippings({ company }) {
                 <SecondaryTitle>Shipping mode</SecondaryTitle>
               </div>
               <div className="col-md-12">
-
+                
               </div>
               <div className="col-md-12 mt-2">
                 <Link href="/checkout/payment" passHref>

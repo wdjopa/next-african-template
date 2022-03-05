@@ -8,6 +8,8 @@ import OrderRecap from "../../components/common/OrderRecap";
 import EmptyStore from "../../components/EmptyStore";
 import Main from "../../components/layout/Main";
 import SectionContainer from "../../components/sections/SectionContainer";
+import { useGenukaDispatch, useGenukaState, placeOrder } from "../../store/genukaStore";
+import Router from "next/router";
 
 const SecondaryTitle = styledComponents.h3`
     font-family: "Open Sans";
@@ -15,16 +17,55 @@ const SecondaryTitle = styledComponents.h3`
     margin-top: 1rem;
 `;
 
-function CheckoutPagePayment({ company }) {
-  const [createAccount, setCreateAccount] = React.useState(false);
+const ImagePayment = styledComponents.img`
+    height: 50px;
+    object-fit: contain;
+    margin-left: 5px;
+      border: 2px solid transparent;
+      transition: all .2s ease;
+`;
+const PaymentModeItem = styledComponents.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  padding: 0rem 2rem;
+  padding-left: 0rem;
+  cursor: pointer;
+  ${(props) =>
+    props.active
+      ? `
+    span{
+      color: var(--secondary-color);
+    }
+    img{
+      // box-shadow: 0px 0px 1px 1px var(--secondary-color);
+      border-radius: 5px;
+      border: 2px solid var(--secondary-color);
+    }
+  `
+      : ""}
+`;
 
-  company = {
-    name: "MATANGA Shoes",
-    description: "Une marque de fabrication de chaussures aux motifs et designs africains",
-    logo: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5605/logo_matanga.png",
-  };
+const PageContent = styledComponents.div`
+    & {
+      font-family: "Open Sans";
+    }
+`;
+
+function CheckoutPagePayment({ company }) {
+  const {current_order,  cart, loading } = useGenukaState();
+  const dispatch = useGenukaDispatch();
   if (!company) return <EmptyStore />;
 
+  console.log(current_order);
+  if(current_order){
+
+      Router.push("/orders/"+current_order.id+"/payment");
+  }
+  if (!current_order && cart.items.length === 0) {
+    Router.push("/cart");
+  }
   const items = [
     {
       label: "Cart",
@@ -36,42 +77,111 @@ function CheckoutPagePayment({ company }) {
       active: true,
       link: "/checkout",
     },
-    {
-      label: "Shipping",
-      active: true,
-      link: "/checkout/shipping",
-    },
+    // {
+    //   label: "Shipping",
+    //   active: true,
+    //   link: "/checkout/shipping",
+    // },
     {
       label: "Payment",
       active: true,
       link: "/checkout/payment",
     },
   ];
+  let payments = [];
+
+  if (company && company.payment_modes) {
+    Object.keys(company.payment_modes).forEach((payment_mode) => {
+      let payment = company.payment_modes[payment_mode];
+      if (payment_mode === "mobilemoney") {
+        payments.push({
+          payment,
+          slug: "mobilemoney",
+        });
+      } else if (payment_mode === "card") {
+        payments.push({
+          payment,
+          slug: "card",
+        });
+      } else {
+        payments.push({
+          payment,
+          slug: payment_mode,
+        });
+      }
+    });
+  }
 
   return (
     <Main company={company}>
       <SectionContainer>
         <DesignedTitle>Checkout</DesignedTitle>
         <Breadcrumb items={items} />
-        <div className="row ">
+        <PageContent className="row ">
           <div className="col-md-7">
             <div className="row ">
               <div className="col-md-12">
                 <SecondaryTitle>Payment mode</SecondaryTitle>
               </div>
-              <div className="col-md-12"></div>
-              <div className="col-md-12 mt-2">
-                <DesignedButton full>Place my order</DesignedButton>
+              <div className="col-md-12 mt-5">
+                <h5>Select a payment mode</h5>
+                {payments && (
+                  <div className="d-flex flex-column justify-content-start align-items-start my-5 ">
+                    {payments.map((payment_mode) => {
+                      return (
+                        <PaymentModeItem
+                          key={payment_mode.slug}
+                          active={payment_mode.slug === cart.payment_mode?.slug}
+                          onClick={() => {
+                            dispatch({ type: "cart", payload: { ...cart, payment_mode } });
+                          }}
+                        >
+                          <ImagePayment src={"/icons/" + payment_mode.slug + ".png"} alt={"Icone de " + payment_mode.payment.full_name} />
+                          <span style={{ marginLeft: "15px" }}>{payment_mode.payment.full_name}</span>
+                        </PaymentModeItem>
+                      );
+                    })}
+                  </div>
+                )}{" "}
+              </div>
+              <div className="col-md-12 mt-2 mb-5">
+                <DesignedButton
+                  full
+                  onClick={() => {
+                    console.log(cart);
+                    if (cart.payment_mode) {
+                      placeOrder(dispatch, cart, company);
+                    }
+                  }}
+                  isLoading={loading?.order}
+                >
+                  Place my order
+                </DesignedButton>
               </div>
             </div>
           </div>
           <div className="col-md-5">
             <OrderRecap />
           </div>
-        </div>
+        </PageContent>
       </SectionContainer>
     </Main>
   );
+}
+
+export async function getServerSideProps(context) {
+  let company, company_url;
+  const { req } = context;
+
+  company_url = "https://" + req.headers.host;
+  let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
+  company = await result.json();
+
+  return {
+    props: {
+      company,
+    },
+  };
 }
 
 export default CheckoutPagePayment;

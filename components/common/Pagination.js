@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 import styledComponents from "styled-components";
 import Arrow from "../icons/Arrow";
@@ -8,7 +10,6 @@ const Container = styledComponents.div`
     justify-content: flex-end;
     flex-wrap: wrap;
 `;
-
 
 const PreviousArrow = styledComponents(Arrow)`
     transform : rotate(180deg);
@@ -35,20 +36,34 @@ const RoundedPageNumber = styledComponents.div`
 
 `;
 
-function Pagination() {
+function Pagination({ pagination }) {
+  const router = useRouter();
+  if (pagination.current_page === pagination.last_page && pagination.last_page === pagination.from) return <></>;
   return (
     <Container>
-      <RoundedPageNumber>
-        <PreviousArrow />
-      </RoundedPageNumber>
-      <RoundedPageNumber active={true}>1</RoundedPageNumber>
-      <RoundedPageNumber>2</RoundedPageNumber>
+      <Link passHref href={pagination.prev != null ? router.pathname + "?per_page=" + pagination.per_page + "&page=" + (parseInt(pagination.current_page) - 1) : "#"}>
+        <RoundedPageNumber>
+          <PreviousArrow />
+        </RoundedPageNumber>
+      </Link>
+      {new Array(pagination.last_page).fill().map((_, i) => {
+        let ind = i + 1;
+        return (
+          <Link href={router.pathname + "?per_page=" + pagination.per_page + "&page=" + ind} passHref key={Math.random()}>
+            <RoundedPageNumber key={"page_" + ind} active={ind === pagination.current_page}>
+              {ind}
+            </RoundedPageNumber>
+          </Link>
+        );
+      })}
+      {/* <RoundedPageNumber>...</RoundedPageNumber>
+      <RoundedPageNumber>45</RoundedPageNumber> */}
 
-      <RoundedPageNumber>...</RoundedPageNumber>
-      <RoundedPageNumber>45</RoundedPageNumber>
-      <RoundedPageNumber>
-        <NextArrow />
-      </RoundedPageNumber>
+      <Link passHref href={pagination.next != null ? router.pathname + "?per_page=" + pagination.per_page + "&page=" + (parseInt(pagination.current_page) + 1) : "#"}>
+        <RoundedPageNumber>
+          <NextArrow />
+        </RoundedPageNumber>
+      </Link>
     </Container>
   );
 }

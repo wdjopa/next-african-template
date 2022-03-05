@@ -40,7 +40,8 @@ export async function getServerSideProps(context) {
   result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
   company = await result.json();
 
-  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/products?per_page=12`);
+  const {per_page = 12, page = 1} = query
+  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/products?per_page=${per_page}&page=${page}`);
   products = (await result.json());
 
   return {
@@ -66,10 +67,10 @@ function CatalogPage({ company, collection, products }) {
         </Bloc>
         <ProductGrid className="row">
           {products.data.map((product) => {
-            return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-lg-3"} currencySymbol={company.currency.symbol} />;
+            return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-lg-4 col-xl-3"} currencySymbol={company.currency.symbol} />;
           })}
         </ProductGrid>
-        <Pagination />
+        <Pagination pagination={{...products.links, ...products.meta}} />
       </SectionContainer>
     </Main>
   );
