@@ -54,14 +54,12 @@ const PageContent = styledComponents.div`
 `;
 
 function CheckoutPagePayment({ company }) {
-  const {current_order,  cart, loading } = useGenukaState();
+  const { current_order, cart, loading } = useGenukaState();
   const dispatch = useGenukaDispatch();
   if (!company) return <EmptyStore />;
 
-  console.log(current_order);
-  if(current_order){
-
-      Router.push("/orders/"+current_order.id+"/payment");
+  if (current_order) {
+    Router.push("/orders/" + current_order.id + "/payment");
   }
   if (!current_order && cart.items.length === 0) {
     Router.push("/cart");
@@ -148,7 +146,6 @@ function CheckoutPagePayment({ company }) {
                 <DesignedButton
                   full
                   onClick={() => {
-                    console.log(cart);
                     if (cart.payment_mode) {
                       placeOrder(dispatch, cart, company);
                     }

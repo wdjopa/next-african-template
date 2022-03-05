@@ -51,7 +51,6 @@ const AddressCard = ({ address }) => {
 };
 
 function AccountAddresses({ company, addresses }) {
-  console.log(addresses);
   return (
     <AccountHome company={company}>
       <h2>Addresses</h2>

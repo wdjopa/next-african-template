@@ -28,7 +28,6 @@ export async function getServerSideProps(context) {
   if (token) {
     result = await fetch(`https://api.genuka.com/2021-10/clients/orders/${order_id}`, { headers: { Authorization: "Bearer " + token } });
     let res = await result.json();
-    console.log(res);
     return {
       props: {
         company,

@@ -46,7 +46,6 @@ async function getCompany(dispatch, domain_url) {
 }
 
 async function getPaginatedCollections(dispatch, company_id, collection_list_pagination) {
-  console.log("Getting new page", collection_list_pagination);
   // dispatch({ type: "loading" });
   try {
     const response = await axios.get(`${genuka_api_2021_10}/companies/${company_id}/collections?per_page=${collection_list_pagination.per_page}&page=${collection_list_pagination.page}&sort_by=${collection_list_pagination.sort_by}&sort_dir=${collection_list_pagination.sort_dir}`);
@@ -244,7 +243,6 @@ async function loginWithToken(dispatch) {
 async function placeOrder(dispatch, cart, company) {
   const token = localStorage.getItem("access_token");
   dispatch({ type: "loading", payload: { order: true } });
-  console.log("Place an order > ", token);
   try {
     let subtotal = cart.items.reduce((total, currentItem) => {
       return total + currentItem.price * currentItem.quantity;
@@ -344,9 +342,7 @@ function commentReducer(state, action) {
         });
       } else {
         cart.items.push(productCart);
-        console.log("Push");
       }
-      console.log(cart, productCart);
       localStorage.setItem("cart", JSON.stringify(cart));
       return { ...state, cart };
     }
@@ -361,7 +357,6 @@ function commentReducer(state, action) {
       return { ...state, user: action.payload, isLogged: true, notifications };
     }
     case "user_register": {
-      console.log(action.payload)
       let notifications = state.notifications;
       if (action.payload.access_token) {
         localStorage.setItem("access_token", action.payload.access_token);
@@ -397,7 +392,6 @@ function commentReducer(state, action) {
     case "loading":
       return { ...state, loading: action.payload };
     default: {
-      console.log("Default > ", action.type);
       state[action.type] = action.payload;
       return { ...state };
       // throw new Error(`Unhandled action type: ${action.type}`);

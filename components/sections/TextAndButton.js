@@ -17,7 +17,6 @@ const Paragraph = styledComponents.p`
 
 function TextAndButton({ datas }) {
   const { title, paragraph, button } = datas;
-  console.log({ button });
   return (
     <SectionContainer style={{ textAlign: "center" }}>
       <Title>{title}</Title>

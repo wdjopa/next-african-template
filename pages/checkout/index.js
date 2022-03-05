@@ -127,7 +127,6 @@ function CheckoutPageInformations({ company }) {
   }, [user]);
 
   React.useEffect(() => {
-    console.log("Checkout cart > ", cart)
     if (cart?.items?.length === 0) {
     
       Router.push("/cart");
@@ -164,7 +163,6 @@ function CheckoutPageInformations({ company }) {
     },
   ];
 
-  console.log("Checkout shipping Address > ", address);
 
   return (
     <Main company={company}>
@@ -222,7 +220,6 @@ function CheckoutPageInformations({ company }) {
                 <div className="col-md-12">
                   <Select
                     onChange={(value) => {
-                      console.log(value);
                       setAddress({
                         ...value.address,
                         is_shipping: 1,

@@ -97,7 +97,6 @@ const OrderCard = ({ order, company }) => {
 };
 
 function AccountOrders({ company, orders }) {
-  console.log(orders);
   return (
     <AccountHome company={company}>
       <h2>Orders</h2>
@@ -143,7 +142,6 @@ export async function getServerSideProps(context) {
     console.error(error, error.response);
     orders = [];
   }
-  console.log(orders);
   return {
     props: {
       company,

@@ -1,14 +1,18 @@
 import React from "react";
 import { useGenukaDispatch, useGenukaState } from "../store/genukaStore";
-import Router from "next/router";
+import router from "next/router";
 
-function LogoutPage({ company }) {
+function LogoutPage() {
   const dispatch = useGenukaDispatch();
   const { isLogged } = useGenukaState();
   React.useEffect(() => {
     dispatch({ type: "logout" });
   }, []);
-  if (!isLogged) Router.push("/");
+
+  React.useEffect(() => {
+    if (!isLogged) router.push("/");
+  }, [isLogged]);
+  
   return <div>logout ...</div>;
 }
 
