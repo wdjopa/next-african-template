@@ -1,44 +1,34 @@
-import React from "react";
-import EmptyStore from "../components/EmptyStore";
-import Main from "../components/layout/Main";
+import Link from "next/link";
 import styledComponents from "styled-components";
-import SectionContainer from "../components/sections/SectionContainer";
+import DesignedButton from "../components/common/DesignedButton";
 import DesignedTitle from "../components/common/DesignedTitle";
+import Divider from "../components/common/Divider";
+import { Copyright } from "../components/layout/Footer";
+import SectionContainer from "../components/sections/SectionContainer";
 
 const Center = styledComponents.div`
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 15rem 0;
+    flex-direction: column;
 `;
-
-
-export async function getServerSideProps(context) {
-  let company, company_url;
-  const { req, query, res, asPath, pathname } = context;
-  company_url = "https://" + req.headers.host;
-  let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
-  company = await result.json();
-
-  return {
-    props: {
-      company,
-    },
-  };
-}
-function Custom404({ company }) {
- 
-  if (!company) return <EmptyStore />;
+function Custom404({}) {
   return (
-    // <Main company={company}>
-      <SectionContainer>
-        <Center>
-          <DesignedTitle>
-          404 - Page not found
-          </DesignedTitle>
-        </Center>
-      </SectionContainer>
-    // </Main>
+    <SectionContainer>
+      <Center>
+        <DesignedTitle>404 - Page not found</DesignedTitle>
+        <br />
+        <br />
+        <Link href="/" passHref>
+          <DesignedButton>Back to home</DesignedButton>
+        </Link>
+      </Center>
+      <Divider />
+      <div style={{ textAlign: "center" }}>
+        <Copyright />
+      </div>
+    </SectionContainer>
   );
 }
 
