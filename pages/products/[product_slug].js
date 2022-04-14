@@ -31,28 +31,13 @@ const TransparentLink = styledComponents.div`
   font-size: 1rem;
 `;
 
-export function ProductVariants({ variants }) {
+export function ProductVariants({ variants, variant_option, onChange }) {
   return (
     <>
       {variants.map((variant) => {
-        return <Variant key={variant.id || Math.random()} variant={variant} />;
+        variant.id = variant.id || Math.random();
+        return <Variant key={variant.id} variant={variant} variant_option={variant_option} onChange={onChange} />;
       })}
-      {/* <Variant
-        variant={{
-          name: "Color",
-          options: [
-            {
-              value: "#AD1E44",
-            },
-            {
-              value: "#348989",
-            },
-            {
-              value: "#0C7FEA",
-            },
-          ],
-        }}
-      /> */}
     </>
   );
 }
@@ -146,6 +131,7 @@ function ProductDetail({ company, product, recommandations }) {
   const { cart } = useGenukaState();
   const dispatch = useGenukaDispatch();
   const [productCart, setProductCart] = React.useState({ product, price: product.price, quantity });
+  const [variant_option, set_variant_option] = React.useState({});
   React.useEffect(() => {
     setProductCart({ ...productCart, quantity });
   }, [quantity]);
@@ -162,6 +148,8 @@ function ProductDetail({ company, product, recommandations }) {
           <title>
             {product.name} - {product?.description?.replace(/<[^>]*>?/gm, "")} | {company.name}
           </title>
+            <link rel="favicon" href={company.logo} />
+            <link rel="icon" href={company.logo} />
           <meta name="description" content={product.description} />
           <meta name="keywords" content={product?.description?.split(" ").join(", ")} />
           <meta name="author" content={product.name} />
@@ -193,14 +181,34 @@ function ProductDetail({ company, product, recommandations }) {
               <NumberFormat thousandsGroupStyle="thousand" value={productCart.price} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
             </ProductPrice>
             <br />
-            <ProductVariants variants={product.variants} />
+            {/* <ProductVariants
+              variants={product.variants}
+              variant_option={variant_option}
+              onChange={(variant, option) => {
+                if (!variant_option[variant.name]) {
+                  variant_option[variant.name] = {};
+                }
+                if (variant.max_choices === 1) {
+                  variant_option[variant.name] = {};
+                }else{
 
+                }
+                variant_option[variant.name][option.name] = option.additionnal_fee > 0 && option.price !== option.additionnal_fee ? "+" + option.additionnal_fee : option.price;
+                setProductCart({ ...productCart, properties: variant_option });
+                if (option.price !== option.additionnal_fee || option.price === 0) {
+                  setProductCart({ ...productCart, price: productCart.price + option.additionnal_fee });
+                } else {
+                  setProductCart({ ...productCart, price: option.price });
+                }
+                set_variant_option({ ...variant_option });
+              }}
+            /> */}
             <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
             <DesignedButton
               full
               onClick={() => {
                 dispatch({ type: "add_product", payload: productCart });
-                dispatch({ type: "notification", payload: { label: "Added to cart ", value: Date.now() } });
+                dispatch({ type: "notification", payload: product.name + " added to cart " });
               }}
               secondary={true}
             >
@@ -225,15 +233,15 @@ function ProductDetail({ company, product, recommandations }) {
                 <span style={{ padding: "0 1rem" }}>Share the product</span>
                 <br />
                 <br />
-                <FacebookShareButton style={{marginRight: "10px"}} url={company.website + "/products/" + product.slug} quote={"I found this new product on " + company.name + ". Check it out"} hashtag={"#" + company.name}>
+                <FacebookShareButton style={{ marginRight: "10px" }} url={company.website + "/products/" + product.slug} quote={"I found this new product on " + company.name + ". Check it out"} hashtag={"#" + company.name}>
                   <FacebookIcon size={32} round />
                 </FacebookShareButton>
 
-                <TwitterShareButton style={{marginRight: "10px"}} url={company.website + "/products/" + product.slug} title={"I found this new product on " + company.name + ". Check it out"}>
+                <TwitterShareButton style={{ marginRight: "10px" }} url={company.website + "/products/" + product.slug} title={"I found this new product on " + company.name + ". Check it out"}>
                   <TwitterIcon size={32} round />
                 </TwitterShareButton>
 
-                <WhatsappShareButton style={{marginRight: "10px"}} url={company.website + "/products/" + product.slug} title={"I found this new product on " + company.name + ". Check it out"} separator=":: ">
+                <WhatsappShareButton style={{ marginRight: "10px" }} url={company.website + "/products/" + product.slug} title={"I found this new product on " + company.name + ". Check it out"} separator=":: ">
                   <WhatsappIcon size={32} round />
                 </WhatsappShareButton>
               </div>

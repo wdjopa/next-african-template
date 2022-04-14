@@ -9,7 +9,7 @@ import EmptyStore from "../../components/EmptyStore";
 import Main from "../../components/layout/Main";
 import SectionContainer from "../../components/sections/SectionContainer";
 import { useGenukaDispatch, useGenukaState, placeOrder } from "../../store/genukaStore";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
 const SecondaryTitle = styledComponents.h3`
     font-family: "Open Sans";
@@ -58,12 +58,17 @@ function CheckoutPagePayment({ company }) {
   const dispatch = useGenukaDispatch();
   if (!company) return <EmptyStore />;
 
-  if (current_order) {
-    Router.push("/orders/" + current_order.id + "/payment");
-  }
-  if (!current_order && cart.items.length === 0) {
-    Router.push("/cart");
-  }
+  const router = useRouter();
+  
+  React.useEffect(() => {
+    if (current_order) {
+      router.push("/orders/" + current_order.reference.replace("#", "") + "/payment");
+    }
+    if (!current_order && cart.items.length === 0) {
+      router.push("/cart");
+    }
+  }, [current_order]);
+
   const items = [
     {
       label: "Cart",

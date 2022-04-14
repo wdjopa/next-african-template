@@ -14,7 +14,17 @@ export async function getServerSideProps(context) {
     let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
     company = await result.json();
     if (company != null && company.template) {
-      template = company.template;
+      if (company.template.length === 0) {
+        return {
+          redirect: {
+            permanent: false,
+            destination: "/products",
+          },
+          props: { company },
+        };
+      } else {
+        template = company.template;
+      }
     } else {
       return {
         redirect: {
@@ -53,6 +63,8 @@ export default function Home({ template, company }) {
           <title>
             {company.name} - {company.description}
           </title>
+            <link rel="favicon" href={company.logo} />
+            <link rel="icon" href={company.logo} />
           <meta name="description" content={company.description} />
           <meta name="keywords" content={company?.description?.split(" ").join(", ")} />
           <meta name="author" content={company.name} />

@@ -22,3 +22,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## TODO 
 - Customer > orders > Finish payments after order
 - Checkout > Pay an order 
+- Finish managing variants

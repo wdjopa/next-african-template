@@ -9,23 +9,36 @@ import Notifications from "../common/Notifications";
 
 function Main({ company, children, head }) {
   const dispatch = useGenukaDispatch();
-  const {notifications} = useGenukaState()
+  const { notifications } = useGenukaState();
   const [globalStyle, setGlobalStyle] = React.useState({ "--main-color": "black", "--primary-color": "green", "--secondary-color": "red", "--main-font": "josefin sans" });
- 
+
   useEffect(() => {
     setGlobalStyle({ ...globalStyle, "--primary-color": "#348989", "--secondary-color": "#D31B51" });
-    dispatch({type: "company", payload: company})
-    loginWithToken(dispatch)
+    dispatch({ type: "company", payload: company });
+    loginWithToken(dispatch);
   }, [company]);
-  
+
   return (
     <div style={globalStyle}>
-      <Head>{head ? head : <title>Home</title>}</Head>
-      <Announcement text={"Livraison offerte à partir de 50.000 FCFA d'achat. Jusqu'au 30/02/2022"} visible={true} />
+      <Head>
+        {head ? (
+          head
+        ) : (
+          <>
+            <title>
+              {company.name} - {company.description}
+            </title>
+            <link rel="favicon" href={company.logo} />
+            <link rel="icon" href={company.logo} />
+            
+          </>
+        )}
+      </Head>
+      {/* <Announcement text={"Livraison offerte à partir de 50.000 FCFA d'achat. Jusqu'au 30/02/2022"} visible={true} /> */}
       <Header company={company} />
       <div className="container">{children}</div>
-     
-      <Notifications notifications={notifications}/>
+
+      <Notifications notifications={notifications} />
       <Footer company={company} />
     </div>
   );

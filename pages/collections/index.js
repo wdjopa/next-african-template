@@ -46,6 +46,8 @@ export default function Home({ company, collections = [] }) {
       head={
         <>
           <title>{company.name} | Collections - check out our collections</title>
+            <link rel="favicon" href={company.logo} />
+            <link rel="icon" href={company.logo} />
           <meta name="description" content={company.description} />
           <meta name="keywords" content={company?.description?.split(" ").join(", ")} />
           <meta name="author" content={company.name} />

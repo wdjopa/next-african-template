@@ -30,6 +30,8 @@ function LegalPage({ company, article }) {
           <title>
             {article.name} - {article.text.replace(/<[^>]*>?/gm, "").substring(0, 100)} | {company.name}
           </title>
+            <link rel="favicon" href={company.logo} />
+            <link rel="icon" href={company.logo} />
           <meta name="author" content={company.name} />
           <meta name="robots" content="index, follow" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />

@@ -85,7 +85,7 @@ function FeaturedProduct({ product_id, currencySymbol }) {
             full
             onClick={() => {
               dispatch({ type: "add_product", payload: productCart });
-              dispatch({ type: "notification", payload: { label: "Added to cart ", value: Date.now() } });
+              dispatch({ type: "notification", payload: product.name + " added to cart" });
             }}
             secondary={true}
           >

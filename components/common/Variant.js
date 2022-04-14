@@ -2,10 +2,14 @@ import React from "react";
 import styledComponents from "styled-components";
 
 const VariantContainer = styledComponents.div`
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 `;
 
 const VariantTitle = styledComponents.h5`
+`;
+
+const VariantDescription = styledComponents.p`
+    margin-bottom: .5rem;
 `;
 
 const VariantOptions = styledComponents.div`
@@ -28,12 +32,15 @@ const ColorCircle = styledComponents.div`
 `;
 
 const Pill = styledComponents.div`
-    background: #CCC;
+    background: ${(props) => (props.active ? "black" : "#CCC")};
+    color: ${(props) => (props.active ? "#EEE" : "#555")};
+
     border-radius: 4px;
     line-height: 2px;
-    color: white;
-    width: 50px; 
+    min-width: 50px;
     height: 30px;
+    padding: 0 .35rem; 
+    margin-bottom: .5rem;
     margin-right: .5rem;
     align-items:center;
     display: flex;
@@ -41,23 +48,49 @@ const Pill = styledComponents.div`
     cursor: pointer;
 
     &:hover{
-    background: #BBB;
+      background: #BBB;
     }
 `;
 
-function Variant({ variant }) {
+function Variant({ variant, variant_option = {}, onChange }) {
+
+  const handleChange = (variant, option) => {
+    onChange(variant, option);
+  };
+
   return (
     <VariantContainer>
-      <VariantTitle>{variant.name}</VariantTitle>
+      <VariantTitle>{variant.name} {variant.required ? "(Required)" : ""}</VariantTitle>
+      <VariantDescription>{variant.description}</VariantDescription>
       <VariantOptions>
-        {variant?.name?.toLocaleLowerCase() === "color" &&
-          variant.options.map((option) => {
-            return <ColorCircle color={option.value} active={false} key={option.id || option.key || Math.random()} />;
-          })}
-        {variant?.name?.toLocaleLowerCase() !== "color" &&
-          variant.options.map((option) => {
-            return <Pill key={option.id || option.key || Math.random()}>{option.value}</Pill>;
-          })}
+        {variant?.name?.toLocaleLowerCase() === "color"
+          ? variant.options.map((option) => {
+            let is_active = variant_option[variant.name] && Object.keys(variant_option[variant.name]).includes(option.name);
+            return (
+              <ColorCircle
+                color={option.name}
+                active={is_active}
+                key={option.id || option.key || Math.random()}
+                onClick={() => {
+                  if (!is_active) handleChange(variant, option);
+                }}
+              />
+            );
+            })
+          : variant.options.map((option) => {
+            let is_active = variant_option[variant.name] && Object.keys(variant_option[variant.name]).includes(option.name)
+              return (
+                <Pill
+                  key={option.id || option.key || Math.random()}
+                  active={is_active}
+                  onClick={() => {
+                    if (!is_active) handleChange(variant, option);
+                  }}
+                >
+                  {option.name}
+                </Pill>
+              );
+            })}
       </VariantOptions>
     </VariantContainer>
   );

@@ -63,6 +63,8 @@ function CollectionPage({ company, collection, products }) {
           <title>
             {collection.name} - {collection?.description?.replace(/<[^>]*>?/gm, "")} | {company.name}
           </title>
+            <link rel="favicon" href={company.logo} />
+            <link rel="icon" href={company.logo} />
           <meta name="description" content={collection.description} />
           <meta name="keywords" content={collection?.description?.split(" ").join(", ")} />
           <meta name="author" content={collection.name} />
