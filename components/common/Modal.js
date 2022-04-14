@@ -85,6 +85,7 @@ const ModalBody = styledComponents.div`
 `;
 const ModalFooter = styledComponents.div`
     padding: 2rem;
+    text-align: right;
 `;
 
 function Modal(props) {
@@ -112,7 +113,7 @@ function Modal(props) {
           </ActionIcon>
         </ModalHeader>
         <ModalBody>{props.children}</ModalBody>
-        {props.footer && <ModalFooter>{props.footer}F</ModalFooter>}
+        {props.footer && <ModalFooter>{props.footer}</ModalFooter>}
       </ModalContainer>
     </Overlay>
   );

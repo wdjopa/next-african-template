@@ -23,7 +23,7 @@ function ThankYouPage({ company }) {
           <DesignedTitle>Thank your for your order {current_order.reference}</DesignedTitle>
           <br />
           <br />
-          <Link href={"/orders/" + current_order.id} passHref>
+          <Link href={"/orders/" + current_order.reference.replace("#", "")} passHref>
             <DesignedButton>See the order recap</DesignedButton>
           </Link>
         </Center>

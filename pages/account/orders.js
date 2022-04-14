@@ -25,9 +25,11 @@ font-family: "Open sans";
   border-radius: 4px;
   cursor: pointer;
   display: inline-block;
-  margin: 1rem; 
+  margin: 2%; 
   width: 45%;
-  @media (max-width: 600px) {
+  align-items: center;
+  vertical-align: top;
+  @media screen and (max-width: 600px) {
     & {
         width: 100%;
         margin: 0 10px; 
@@ -39,60 +41,78 @@ font-family: "Open sans";
 `;
 const OrderCard = ({ order, company }) => {
   return (
-    <Link href={"/orders/" + order.id} passHref>
-      <ContainerOrderCard>
-        <h5>Order {order.reference}</h5>
-        Created on {dayjs(order.created_at).format("MMMM D, YYYY h:mm A")}
-        <br />
-        {order.shipping_state === 0 && <Pill danger>🚚 Not shipped</Pill>}
-        {order.shipping_state === 1 && <Pill success>🚚 Shipped</Pill>}
-        {order.payment_state === 0 && <Pill danger>💳 Not paid</Pill>}
-        {order.payment_state === 1 && <Pill success>💳 Paid</Pill>}
-        <Divider />
-        <strong>Items</strong>
-        <br />
-        <ul>
-          {order.products.map((product) => {
-            return (
-              <li key={product.id + order.id} style={{ listStyleType: "none" }}>
-                <Link href={"/products/" + product.slug} passHref>
-                  <>
-                    {product.pivot.quantite} &times; {product.name} ({product.pivot.prix} {company.currency.symbol})
-                  </>
-                </Link>
-                {/* {JSON.stringify(product)} */}
-              </li>
-            );
-          })}
-        </ul>
-        <Divider />
-        <strong>Address</strong>
-        {order.addresses.map((address) => {
+    // <Link href={"/orders/" + order.id} passHref>
+    <ContainerOrderCard>
+      <h5>Order {order.reference}</h5>
+      Created on {dayjs(order.created_at).format("MMMM D, YYYY h:mm A")}
+      <br />
+      {order.shipping_state === 0 && (
+        <Pill danger title="Your order has not been shipped yet">
+          🚚 Not shipped
+        </Pill>
+      )}
+      {order.shipping_state === 1 && (
+        <Pill success title="Your order has been shipped">
+          🚚 Shipped
+        </Pill>
+      )}
+      {order.payment_state === 0 && (
+        <Link passHref href={`/orders/${order.reference.replace("#", "")}/payment`}>
+          <Pill danger title="Click here to process payment">
+            💳 Not paid
+          </Pill>
+        </Link>
+      )}
+      {order.payment_state === 1 && (
+        <Pill success title="You have paid this order">
+          💳 Paid
+        </Pill>
+      )}
+      <Divider />
+      <strong>Items</strong>
+      <br />
+      <ul>
+        {order.products.map((product) => {
           return (
-            <>
-              <br />
-              {address.label}
-              <br />
-              {address.given_name} {address.family_name}
-              {" / "}
-              {address.attributes?.tel}
-              <br />
-              {address.street} {address.city}
-              <br />
-              {address.postal_code} {address.country}
-            </>
+            <li key={product.id + order.id} style={{ listStyleType: "none" }}>
+              <Link href={"/products/" + product.slug} passHref>
+                <>
+                  {product.pivot.quantite} &times; {product.name} ({product.pivot.prix} {company.currency.symbol})
+                </>
+              </Link>
+              {/* {JSON.stringify(product)} */}
+            </li>
           );
         })}
-        <br />
-        <br />
-        <Divider />
-        <strong>Total</strong>
-        <br />
-        <div style={{ textAlign: "right" }}>
-          <NumberFormat thousandsGroupStyle="thousand" value={order.total} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
-        </div>
-      </ContainerOrderCard>
-    </Link>
+      </ul>
+      <Divider />
+      <strong>Address</strong>
+      {order.addresses.map((address) => {
+        return (
+          <>
+            <br />
+            {address.label}
+            <br />
+            {address.given_name} {address.family_name}
+            {" / "}
+            {address.attributes?.tel}
+            <br />
+            {address.street} {address.city}
+            <br />
+            {address.postal_code} {address.country}
+          </>
+        );
+      })}
+      <br />
+      <br />
+      <Divider />
+      <strong>Total</strong>
+      <br />
+      <div style={{ textAlign: "right" }}>
+        <NumberFormat thousandsGroupStyle="thousand" value={order.total} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + company.currency.symbol} />
+      </div>
+    </ContainerOrderCard>
+    // </Link>
   );
 };
 

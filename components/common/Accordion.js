@@ -36,7 +36,7 @@ const Content = styledComponents.div``;
 
 function Accordion(props) {
   const { title, children } = props;
-  const [showContent, setShowContent] = React.useState(false);
+  const [showContent, setShowContent] = React.useState(true);
   return (
     <Container {...props}>
       <Header>

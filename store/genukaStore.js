@@ -162,7 +162,7 @@ async function registerUser(dispatch, company_id, user) {
     }
   } catch (error) {
     if (error.response.status === 403) {
-      dispatch({ type: "notification", payload: error.response.data.message });
+      dispatch({ type: "notification", payload: error.response.data.message, color: "red" });
     }
     dispatch({
       type: "error",
@@ -194,7 +194,7 @@ async function loginUser(dispatch, company_id, { email, password }) {
     }
   } catch (error) {
     if (error.response.status === 403) {
-      dispatch({ type: "notification", payload: "Email/Tel or password invalid" });
+      dispatch({ type: "notification", payload: "Email/Tel or password invalid", color: "red" });
     }
     dispatch({
       type: "error",
@@ -218,6 +218,110 @@ async function getAddresses(dispatch) {
   } catch (error) {
     dispatch({
       type: "error",
+      payload: "An error occur when getting addresses",
+    });
+  }
+}
+
+async function getUser(dispatch) {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.get(`${genuka_api_2021_10}/user`, { headers: { Authorization: "Bearer " + token } });
+    if (response.data) {
+      dispatch({ type: "get_user", payload: response.data });
+    } else {
+      dispatch({
+        type: "notification",
+        color: "red",
+        payload: "An error occur when getting user",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    dispatch({
+      type: "notification",
+      color: "red",
+      payload: error.message,
+    });
+  }
+  return false;
+}
+
+async function updateUser(dispatch, user) {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.put(`${genuka_api_2021_10}/customers/account/update`, { ...user, fromApi: true }, { headers: { Authorization: "Bearer " + token } });
+    if (response.data) {
+      dispatch({
+        type: "notification",
+        payload: "Informations updated successfully",
+      });
+      dispatch({ type: "updated_user", payload: response.data });
+      return true;
+    } else {
+      dispatch({
+        type: "notification",
+        color: "red",
+        payload: "An error occur when updating user",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    dispatch({
+      type: "notification",
+      color: "red",
+      payload: error.message,
+    });
+  }
+  return false;
+}
+
+async function updatePassword(dispatch, user) {
+  const token = localStorage.getItem("access_token");
+  try {
+    // TPDP : Update user
+    const response = await axios.put(`${genuka_api_2021_10}/clients/password/update`, { ...user, fromApi : true }, { headers: { Authorization: "Bearer " + token } });
+    if (response.data) {
+      if (response.data.success) {
+        dispatch({ type: "notification", payload: response.data.message });
+        return true;
+      } else {
+        dispatch({ type: "notification", payload: response.data.message, color: "red" });
+      }
+    } else {
+      dispatch({
+        type: "notification",
+        color: "red",
+        payload: "An error occur when updating password",
+      });
+    }
+  } catch (error) {
+    dispatch({
+      type: "notification",
+      color: "red",
+      payload: error.message,
+    });
+  }
+  return false;
+}
+async function updateAddress(dispatch, address) {
+  const token = localStorage.getItem("access_token");
+  try {
+    const response = await axios.put(`${genuka_api_2021_10}/customers/addresses`, { ...address }, { headers: { Authorization: "Bearer " + token } });
+    if (response.data) {
+      dispatch({ type: "updated_address", payload: response.data });
+      return true;
+    } else {
+      dispatch({
+        type: "notification",
+        color: "red",
+        payload: "An error occur when getting addresses",
+      });
+    }
+  } catch (error) {
+    dispatch({
+      type: "notification",
+      color: "red",
       payload: "An error occur when getting addresses",
     });
   }
@@ -346,13 +450,15 @@ function commentReducer(state, action) {
       localStorage.setItem("cart", JSON.stringify(cart));
       return { ...state, cart };
     }
-
+    case "get_user": {
+      return { ...state, user: action.payload };
+    }
     case "user_login": {
       let notifications = state.notifications;
       if (action.payload.access_token) {
         localStorage.setItem("access_token", action.payload.access_token);
         setCookie("access_token", action.payload.access_token);
-        notifications = [...state.notifications, "Welcome back " + action.payload.first_name];
+        notifications = [...state.notifications, { value: Date.now(), label: "Welcome back " + action.payload.first_name }];
       }
       return { ...state, user: action.payload, isLogged: true, notifications };
     }
@@ -361,12 +467,28 @@ function commentReducer(state, action) {
       if (action.payload.access_token) {
         localStorage.setItem("access_token", action.payload.access_token);
         setCookie("access_token", action.payload.access_token);
-        notifications = [...state.notifications, "Welcome  " + action.payload.first_name];
+        notifications = [...state.notifications, { value: Date.now(), label: "Welcome  " + action.payload.first_name }];
       }
       return { ...state, user: action.payload, isLogged: true, notifications };
     }
+    case "updated_user": {
+      return { ...state, user: { ...state.user, ...action.payload } };
+    }
+
     case "list_addresses": {
       return { ...state, addresses: action.payload };
+    }
+    case "updated_address": {
+      return {
+        ...state,
+        addresses: state.addresses.map((address) => {
+          if (address.id === action.payload.id) {
+            return action.payload;
+          }
+          return address;
+        }),
+        notifications: [...state.notifications, { value: Date.now(), label: "Address updated with success." }],
+      };
     }
     case "order_placed": {
       let cart = {
@@ -374,7 +496,7 @@ function commentReducer(state, action) {
         items: [],
       };
       localStorage.setItem("cart", JSON.stringify(cart));
-      return { ...state, cart, current_order: action.payload, notifications: [...state.notifications, "Order " + action.payload.reference + " with success."] };
+      return { ...state, cart, current_order: action.payload, notifications: [...state.notifications, { value: Date.now(), label: "Order " + action.payload.reference + " with success." }] };
     }
     case "logout": {
       localStorage.removeItem("access_token");
@@ -382,7 +504,7 @@ function commentReducer(state, action) {
       return { ...state, isLogged: false, user: undefined };
     }
     case "notification": {
-      return { ...state, notifications: [...state.notifications, action.payload] };
+      return { ...state, notifications: [...state.notifications, { label: action.payload, value: Date.now(), color: action.color || "black" }] };
     }
     case "notifications": {
       return { ...state, notifications: action.payload };
@@ -455,4 +577,4 @@ function useGenukaDispatch() {
   return context;
 }
 
-export { GenukaProvider, useGenukaState, useGenukaDispatch, getCompany, getCompanyById, getCollection, getProduct, getProductById, getPaginatedCollections, getCollectionProducts, loginUser, registerUser, getAddresses, loginWithToken, placeOrder };
+export { GenukaProvider, useGenukaState, useGenukaDispatch, getCompany, getCompanyById, getCollection, getProduct, getProductById, getPaginatedCollections, getCollectionProducts, loginUser, registerUser, getAddresses, loginWithToken, placeOrder, updateAddress, updateUser, updatePassword, getUser };

@@ -37,21 +37,44 @@ export async function getServerSideProps(context) {
 }
 
 export default function Home({ company, collections = [] }) {
- 
   let pagination;
   if (!company) return <EmptyStore />;
 
   return (
-    <Main company={company}>
+    <Main
+      company={company}
+      head={
+        <>
+          <title>{company.name} | Collections - check out our collections</title>
+          <meta name="description" content={company.description} />
+          <meta name="keywords" content={company?.description?.split(" ").join(", ")} />
+          <meta name="author" content={company.name} />
+          <meta name="robots" content="index, follow" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+          <meta name="apple-mobile-web-app-title" content={company.name} />
+          <meta name="msapplication-TileColor" content="#222" />
+          <meta name="msapplication-TileImage" content={company.logo} />
+          <meta name="theme-color" content="#222" />
+          <meta property="og:title" content={company.name} />
+          <meta property="og:description" content={company.description} />
+          <meta property="og:image" content={company.logo} />
+          <meta property="og:url" content={company.website} />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content={company.name} />
+        </>
+      }
+    >
       <SectionContainer>
         <DesignedTitle>Collections</DesignedTitle>
         <CollectionDescription>Découvrez toutes nos collections</CollectionDescription>
         <CollectionListContainer className="row">
           {collections.data.map((collection) => {
-            return <CollectionCard className="col-lg-4 col-md-6" key={collection.id || Math.random()} collection={collection} company_logo={company.logo}/>;
+            return <CollectionCard className="col-lg-4 col-md-6" key={collection.id || Math.random()} collection={collection} company_logo={company.logo} />;
           })}
         </CollectionListContainer>
-        <Pagination pagination={{...collections.links, ...collections.meta}} />
+        <Pagination pagination={{ ...collections.links, ...collections.meta }} />
       </SectionContainer>
     </Main>
   );

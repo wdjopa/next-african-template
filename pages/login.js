@@ -42,7 +42,31 @@ function LoginPage({ company }) {
     }
   }, [user]);
   return (
-    <Main company={company}>
+    <Main
+      company={company}
+      head={
+        <>
+          <title>{company.name} | Login</title>
+          <meta name="description" content={company.description} />
+          <meta name="keywords" content={company?.description?.split(" ").join(", ")} />
+          <meta name="author" content={company.name} />
+          <meta name="robots" content="index, follow" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+          <meta name="apple-mobile-web-app-title" content={company.name} />
+          <meta name="msapplication-TileColor" content="#222" />
+          <meta name="msapplication-TileImage" content={company.logo} />
+          <meta name="theme-color" content="#222" />
+          <meta property="og:title" content={company.name} />
+          <meta property="og:description" content={company.description} />
+          <meta property="og:image" content={company.logo} />
+          <meta property="og:url" content={company.website} />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content={company.name} />
+        </>
+      }
+    >
       <SectionContainer>
         <Center>
           <DesignedTitle style={{ marginBottom: "2rem", textAlign: "left" }}>Login</DesignedTitle>
@@ -88,7 +112,15 @@ export async function getServerSideProps(context) {
   company_url = "https://" + req.headers.host;
   let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
   company = await result.json();
-
+ if (!company || !company.template) {
+   return {
+     redirect: {
+       permanent: false,
+       destination: "/404",
+     },
+     props: {},
+   };
+ }
   return {
     props: {
       company,

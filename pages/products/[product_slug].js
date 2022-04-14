@@ -11,6 +11,8 @@ import Main from "../../components/layout/Main";
 import SectionContainer from "../../components/sections/SectionContainer";
 import { useGenukaDispatch, useGenukaState } from "../../store/genukaStore";
 import Router from "next/router";
+import Divider from "../../components/common/Divider";
+import { FacebookIcon, FacebookShareButton, TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton } from "next-share";
 
 const ProductName = styledComponents.h2`
   font-size: 2.5rem;
@@ -105,7 +107,7 @@ function Thumbnails({ medias, onChange, activeImageUrl }) {
 }
 
 const ImageContainer = styledComponents.div`
-  height: 50vh;
+  min-height: 50vh;
   
 `;
 
@@ -141,7 +143,7 @@ function ImagesManager({ medias }) {
 
 function ProductDetail({ company, product, recommandations }) {
   const [quantity, setQuantity] = React.useState(1);
-  const {cart} = useGenukaState()
+  const { cart } = useGenukaState();
   const dispatch = useGenukaDispatch();
   const [productCart, setProductCart] = React.useState({ product, price: product.price, quantity });
   React.useEffect(() => {
@@ -153,7 +155,33 @@ function ProductDetail({ company, product, recommandations }) {
   }, [product]);
 
   return (
-    <Main company={company}>
+    <Main
+      company={company}
+      head={
+        <>
+          <title>
+            {product.name} - {product?.description?.replace(/<[^>]*>?/gm, "")} | {company.name}
+          </title>
+          <meta name="description" content={product.description} />
+          <meta name="keywords" content={product?.description?.split(" ").join(", ")} />
+          <meta name="author" content={product.name} />
+          <meta name="robots" content="index, follow" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+          <meta name="apple-mobile-web-app-title" content={product.name} />
+          <meta name="msapplication-TileColor" content="#222" />
+          <meta name="msapplication-TileImage" content={product.medias.length > 0 ? product.medias[0].link : company.logo} />
+          <meta name="theme-color" content="#222" />
+          <meta property="og:title" content={product.name} />
+          <meta property="og:description" content={product.description} />
+          <meta property="og:image" content={product.medias.length > 0 ? product.medias[0].link : company.logo} />
+          <meta property="og:url" content={company.website + "/products/" + product.slug} />
+          <meta property="og:type" content="product" />
+          <meta property="og:site_name" content={product.name} />
+        </>
+      }
+    >
       <SectionContainer style={{ marginTop: "1rem!important" }}>
         <div className="row">
           <div className="col-md-6 py-4">
@@ -166,12 +194,13 @@ function ProductDetail({ company, product, recommandations }) {
             </ProductPrice>
             <br />
             <ProductVariants variants={product.variants} />
+
             <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
             <DesignedButton
               full
               onClick={() => {
                 dispatch({ type: "add_product", payload: productCart });
-                dispatch({ type: "notification", payload: "Added to cart " });
+                dispatch({ type: "notification", payload: { label: "Added to cart ", value: Date.now() } });
               }}
               secondary={true}
             >
@@ -190,17 +219,37 @@ function ProductDetail({ company, product, recommandations }) {
             >
               Buy now
             </DesignedButton>
-            <a href="" style={{ display: "inline-block" }}>
+            <TransparentLink>
+              <div>
+                <Share />
+                <span style={{ padding: "0 1rem" }}>Share the product</span>
+                <br />
+                <br />
+                <FacebookShareButton style={{marginRight: "10px"}} url={company.website + "/products/" + product.slug} quote={"I found this new product on " + company.name + ". Check it out"} hashtag={"#" + company.name}>
+                  <FacebookIcon size={32} round />
+                </FacebookShareButton>
+
+                <TwitterShareButton style={{marginRight: "10px"}} url={company.website + "/products/" + product.slug} title={"I found this new product on " + company.name + ". Check it out"}>
+                  <TwitterIcon size={32} round />
+                </TwitterShareButton>
+
+                <WhatsappShareButton style={{marginRight: "10px"}} url={company.website + "/products/" + product.slug} title={"I found this new product on " + company.name + ". Check it out"} separator=":: ">
+                  <WhatsappIcon size={32} round />
+                </WhatsappShareButton>
+              </div>
+            </TransparentLink>
+            {/* <a href="" style={{ display: "inline-block" }}>
               <TransparentLink>
                 <Share />
                 <span style={{ padding: "0 1rem" }}>Share the product</span>
               </TransparentLink>
-            </a>
+            </a> */}
+            <Accordion title={"Description"}>
+              <div style={{ textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: product.description }} />
+            </Accordion>
           </div>
         </div>
-        <Accordion title={"Description"}>
-          <div style={{ textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: product.description }} />
-        </Accordion>
+
         {/* <Accordion title={"Customer reviews"}></Accordion> */}
       </SectionContainer>
 

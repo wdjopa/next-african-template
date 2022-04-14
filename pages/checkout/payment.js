@@ -89,25 +89,27 @@ function CheckoutPagePayment({ company }) {
   let payments = [];
 
   if (company && company.payment_modes) {
-    Object.keys(company.payment_modes).forEach((payment_mode) => {
-      let payment = company.payment_modes[payment_mode];
-      if (payment_mode === "mobilemoney") {
-        payments.push({
-          payment,
-          slug: "mobilemoney",
-        });
-      } else if (payment_mode === "card") {
-        payments.push({
-          payment,
-          slug: "card",
-        });
-      } else {
-        payments.push({
-          payment,
-          slug: payment_mode,
-        });
-      }
-    });
+    Object.keys(company.payment_modes)
+      .filter((payment_mode) => company.payment_modes[payment_mode].accept)
+      .forEach((payment_mode) => {
+        let payment = company.payment_modes[payment_mode];
+        if (payment_mode === "mobilemoney") {
+          payments.push({
+            payment,
+            slug: "mobilemoney",
+          });
+        } else if (payment_mode === "card") {
+          payments.push({
+            payment,
+            slug: "card",
+          });
+        } else {
+          payments.push({
+            payment,
+            slug: payment_mode,
+          });
+        }
+      });
   }
 
   return (

@@ -56,7 +56,33 @@ export async function getServerSideProps(context) {
 
 function CollectionPage({ company, collection, products }) {
   return (
-    <Main company={company}>
+    <Main
+      company={company}
+      head={
+        <>
+          <title>
+            {collection.name} - {collection?.description?.replace(/<[^>]*>?/gm, "")} | {company.name}
+          </title>
+          <meta name="description" content={collection.description} />
+          <meta name="keywords" content={collection?.description?.split(" ").join(", ")} />
+          <meta name="author" content={collection.name} />
+          <meta name="robots" content="index, follow" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+          <meta name="apple-mobile-web-app-title" content={collection.name} />
+          <meta name="msapplication-TileColor" content="#222" />
+          <meta name="msapplication-TileImage" content={collection.medias.length > 0 ? collection.medias[0].link : company.logo} />
+          <meta name="theme-color" content="#222" />
+          <meta property="og:title" content={collection.name} />
+          <meta property="og:description" content={collection.description} />
+          <meta property="og:image" content={collection.medias.length > 0 ? collection.medias[0].link : company.logo} />
+          <meta property="og:url" content={company.website + "/collections/" + collection.slug} />
+          <meta property="og:type" content="product collection" />
+          <meta property="og:site_name" content={collection.name} />
+        </>
+      }
+    >
       <SectionContainer>
         <Bloc className="row align-items-center">
           <div className="col-md-6">
@@ -72,7 +98,7 @@ function CollectionPage({ company, collection, products }) {
             return <ProductCard key={Math.random()} product={product} className={"col-sm-6 col-md-4 col-xl-3"} currencySymbol={company.currency.symbol} />;
           })}
         </ProductGrid>
-        <Pagination pagination={{ ...products.links , ...products.meta}} />
+        <Pagination pagination={{ ...products.links, ...products.meta }} />
       </SectionContainer>
     </Main>
   );

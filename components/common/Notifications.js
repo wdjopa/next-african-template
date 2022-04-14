@@ -25,12 +25,12 @@ const Container = styledComponents.div`
   padding: 1rem 1rem;
   background-color: white;
   overflow: hidden;
-  color: black;
   font-size: 1.3rem;
   border-radius: 5px;
-  background: black;
   text-align: center;
+  background: black;
   color: white;
+  background-color: ${props => props.color || "black"};
      @media (max-width: 600px) {
         & {
             width: 90%;
@@ -59,8 +59,8 @@ const Notification = React.memo(({ notification, deleteNotification, timeout }) 
   }, [isVisible]);
   return (
     isVisible && (
-      <Container key={Math.random()}>
-        <Text>{notification}</Text>
+      <Container key={Math.random()} color={notification.color}>
+        <Text>{notification.label}</Text>
         <ActionIcon
           onClick={() => {
             setIsVisible(false);
@@ -86,7 +86,7 @@ function Notifications(props) {
               notification={notification}
               key={Math.random()}
               deleteNotification={(notification) => {
-                dispatch({ type: "notifications", payload: notifications.filter((n) => n != notification) });
+                dispatch({ type: "notifications", payload: notifications.filter((n) => n.value != notification.value) });
               }}
             />
           );

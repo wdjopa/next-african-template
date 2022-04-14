@@ -53,7 +53,9 @@ const ImagePayment = styledComponents.img`
 const PaymentIcons = React.memo(({ company }) => {
   if (company && company.payment_modes) {
     let payments = [];
-    Object.keys(company.payment_modes).forEach((payment_mode) => {
+    Object.keys(company.payment_modes)
+      .filter((payment_mode) => company.payment_modes[payment_mode].accept)
+    .forEach((payment_mode) => {
       let payment = company.payment_modes[payment_mode];
       if (payment_mode === "mobilemoney") {
         payments.push({
@@ -87,7 +89,7 @@ const PaymentIcons = React.memo(({ company }) => {
     return (
       <div className="d-flex justify-content-end ">
         {payments.map((payment_mode) => {
-          return <ImagePayment key={payment_mode.slug} src={"/icons/" + payment_mode.slug + ".png"} alt={"Icone de " + payment_mode.payment.full_name} />;
+          return <ImagePayment key={payment_mode.slug} src={"/icons/" + payment_mode.slug + ".png"} alt={"Icon of " + payment_mode.payment.full_name} title={"Payment method accepted : "+payment_mode.payment.full_name} />;
         })}
       </div>
     );
@@ -98,10 +100,14 @@ const PaymentIcons = React.memo(({ company }) => {
 
 export function Copyright({ company }) {
   return (
-    <div className="row py-4">
+    <div className="row py-4 ">
       <div className="col-md-8 mt-3">
         <CopyrightText>
-          All rights reserved {company && company.name} 2022. Ecommerce propulsed by <a href="https://genuka.com/?ref=matanga">Genuka</a>
+          All rights reserved <u>{company && company.name}</u> {new Date().getFullYear()}. E-commerce propulsed by{" "}
+          <a href="https://genuka.com/?ref=matanga" style={{ color: "#FF6600" }}>
+            Genuka
+          </a>
+          .
         </CopyrightText>
       </div>
       {company && (
@@ -115,14 +121,14 @@ export function Copyright({ company }) {
 
 const Footer = React.memo(({ company }) => {
   return (
-    <div className={"container"}>
+    <div className={"container"} style={{ marginTop: "10rem" }}>
       <div className={"row"}>
-        <div className=" col-md-4">
+        <div className=" col-md">
           <CompanyName>{company.name}</CompanyName>
           <CompanyDescription>{company.description}</CompanyDescription>
           <Image src={company.logo} alt={"Logo de " + company.name} width={100} height={100} />
         </div>
-        <div className="   col-md-4">
+        <div className="   col-md">
           <Title className="main-font">Links</Title>
           <Ul>
             <Li>
@@ -157,36 +163,22 @@ const Footer = React.memo(({ company }) => {
             </Li> */}
           </Ul>
         </div>
-        <div className="   col-md-4">
-          <Title className="main-font">Mentions légales</Title>
-          <Ul>
-            <Li>
-              <Link passHref href="/legals/politique-de-remboursement">
-                Politique de remboursement
-              </Link>
-            </Li>
-            <Li>
-              <Link passHref href="/legals/politique-de-remboursement">
-                Politique de livraison
-              </Link>
-            </Li>
-            <Li>
-              <Link passHref href="/legals/politique-de-remboursement">
-                Conditions générales d'utilisation
-              </Link>
-            </Li>
-            <Li>
-              <Link passHref href="/legals/politique-de-remboursement">
-                Déclaration de confidentialité
-              </Link>
-            </Li>
-            <Li>
-              <Link passHref href="/legals/politique-de-remboursement">
-                Mentions légales
-              </Link>
-            </Li>
-          </Ul>
-        </div>
+        {company && company.legals && company.legals.length > 0 && (
+          <div className="   col-md">
+            <Title className="main-font">Legals</Title>
+            <Ul>
+              {company.legals.map((legal) => {
+                return (
+                  <Li key={legal.id}>
+                    <Link passHref href={"/legals/"+legal.slug}>
+                      {legal.title}
+                    </Link>
+                  </Li>
+                );
+              })}
+            </Ul>
+          </div>
+        )}
       </div>
       <SocialIcons social_networks={[]} />
       <Divider />

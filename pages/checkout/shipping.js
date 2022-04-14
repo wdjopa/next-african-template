@@ -19,11 +19,7 @@ const SecondaryTitle = styledComponents.h3`
 function CheckoutPageShippings({ company }) {
   const [createAccount, setCreateAccount] = React.useState(false);
 
-  company = {
-    name: "MATANGA Shoes",
-    description: "Une marque de fabrication de chaussures aux motifs et designs africains",
-    logo: "https://bucket-my-store.s3.eu-west-3.amazonaws.com/5605/logo_matanga.png",
-  };
+  
   if (!company) return <EmptyStore />;
 
   const items = [

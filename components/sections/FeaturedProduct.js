@@ -42,18 +42,16 @@ function FeaturedProduct({ product_id, currencySymbol }) {
   const [quantity, setQuantity] = React.useState(1);
   const [loading, setLoading] = React.useState(true);
 
-   const dispatch = useGenukaDispatch();
-   const [productCart, setProductCart] = React.useState();
+  const dispatch = useGenukaDispatch();
+  const [productCart, setProductCart] = React.useState();
 
-   React.useEffect(() => {
-     if(productCart)
-     setProductCart({ ...productCart, quantity });
-   }, [quantity]);
+  React.useEffect(() => {
+    if (productCart) setProductCart({ ...productCart, quantity });
+  }, [quantity]);
 
-   React.useEffect(() => {
-     if(product)
-     setProductCart({ product, price: product.price, quantity: 1 });
-   }, [product]);
+  React.useEffect(() => {
+    if (product) setProductCart({ product, price: product.price, quantity: 1 });
+  }, [product]);
 
   async function getProduct() {
     let result = await fetch(`https://api.genuka.com/2021-10/products/${product_id}`);
@@ -69,8 +67,7 @@ function FeaturedProduct({ product_id, currencySymbol }) {
     }
   }, [product_id]);
 
-  if(loading)
-  return <></>
+  if (loading) return <></>;
   return (
     <SectionContainer>
       <div className="row">
@@ -84,10 +81,14 @@ function FeaturedProduct({ product_id, currencySymbol }) {
           </ProductPrice>
           <ProductVariants variants={product.variants} />
           <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
-          <DesignedButton full onClick={() => {
-                dispatch({ type: "add_product", payload: productCart });
-            dispatch({type: "notification", payload: "Added to cart "})
-          }} secondary={true}>
+          <DesignedButton
+            full
+            onClick={() => {
+              dispatch({ type: "add_product", payload: productCart });
+              dispatch({ type: "notification", payload: { label: "Added to cart ", value: Date.now() } });
+            }}
+            secondary={true}
+          >
             Add to cart
           </DesignedButton>
           <Link href={"/products/" + product.slug} passHref style={{ marginTop: "1rem", display: "block" }}>

@@ -199,10 +199,31 @@ function CartPage({ company }) {
       },
     });
   };
-
+  const head = (
+    <>
+      <title>{company.name} | Cart</title>
+      <meta name="description" content={company.description} />
+      <meta name="keywords" content={company?.description?.split(" ").join(", ")} />
+      <meta name="author" content={company.name} />
+      <meta name="robots" content="index, follow" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      <meta name="apple-mobile-web-app-title" content={company.name} />
+      <meta name="msapplication-TileColor" content="#222" />
+      <meta name="msapplication-TileImage" content={company.logo} />
+      <meta name="theme-color" content="#222" />
+      <meta property="og:title" content={company.name} />
+      <meta property="og:description" content={company.description} />
+      <meta property="og:image" content={company.logo} />
+      <meta property="og:url" content={company.website} />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content={company.name} />
+    </>
+  );
   if (cart.items.length === 0)
     return (
-      <Main company={company}>
+      <Main company={company} head={head}>
         <SectionContainer>
           <Center>
             <DesignedTitle>Your cart is empty</DesignedTitle>
@@ -217,7 +238,7 @@ function CartPage({ company }) {
     );
   else
     return (
-      <Main company={company}>
+      <Main company={company} head={head}>
         <SectionContainer>
           <DesignedTitle>Your cart</DesignedTitle>
           <Header className="d-none d-md-block">
@@ -235,9 +256,12 @@ function CartPage({ company }) {
           <div className="row">
             <OrderNoteBox className="col-md-6">
               <Title>Instructions complémentaires concernant la commande</Title>
-              <TextArea rows={5} onChange={(e)=>{
-                dispatch({type: "cart", payload: {...cart, note : e.target.value}})
-              }} />
+              <TextArea
+                rows={5}
+                onChange={(e) => {
+                  dispatch({ type: "cart", payload: { ...cart, note: e.target.value } });
+                }}
+              />
             </OrderNoteBox>
             <PricesBox className="col-md-6">
               <PriceLine className="row">
@@ -298,7 +322,15 @@ export async function getServerSideProps(context) {
   company_url = "https://" + req.headers.host;
   let result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
   company = await result.json();
-
+  if (!company || !company.template) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/404",
+      },
+      props: {},
+    };
+  }
   return {
     props: {
       company,

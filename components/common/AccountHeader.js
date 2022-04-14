@@ -18,7 +18,7 @@ function AccountHeader(props) {
   return (
     <Container mobile={mobile}>
       <Link href="/account" passHref>
-        <div style={{display: "flex",alignItems:"end"}}>
+        <div style={{display: "flex",alignItems:"end", cursor :"pointer"}}>
           {!mobile && user && "Hello " + user.first_name}
           <ActionIcon>
             <UserIcon width={"20"} height={"20"} style={{ marginLeft: "1rem" }} size={512} />
