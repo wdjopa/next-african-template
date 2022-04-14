@@ -56,10 +56,9 @@ const PageContent = styledComponents.div`
 function CheckoutPagePayment({ company }) {
   const { current_order, cart, loading } = useGenukaState();
   const dispatch = useGenukaDispatch();
-  if (!company) return <EmptyStore />;
 
   const router = useRouter();
-  
+
   React.useEffect(() => {
     if (current_order) {
       router.push("/orders/" + current_order.reference.replace("#", "") + "/payment");
@@ -68,6 +67,7 @@ function CheckoutPagePayment({ company }) {
       router.push("/cart");
     }
   }, [current_order]);
+  if (!company) return <EmptyStore />;
 
   const items = [
     {
