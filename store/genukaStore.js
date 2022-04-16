@@ -280,7 +280,7 @@ async function updatePassword(dispatch, user) {
   const token = localStorage.getItem("access_token");
   try {
     // TPDP : Update user
-    const response = await axios.put(`${genuka_api_2021_10}/clients/password/update`, { ...user, fromApi : true }, { headers: { Authorization: "Bearer " + token } });
+    const response = await axios.put(`${genuka_api_2021_10}/clients/password/update`, { ...user, fromApi: true }, { headers: { Authorization: "Bearer " + token } });
     if (response.data) {
       if (response.data.success) {
         dispatch({ type: "notification", payload: response.data.message });
@@ -347,60 +347,63 @@ async function loginWithToken(dispatch) {
 async function placeOrder(dispatch, cart, company) {
   const token = localStorage.getItem("access_token");
   dispatch({ type: "loading", payload: { order: true } });
+  let headers = {};
+  if (token) {
+    headers["Authorization"] = "Bearer " + token;
+  }
   try {
     let subtotal = cart.items.reduce((total, currentItem) => {
       return total + currentItem.price * currentItem.quantity;
     }, 0);
-    if (token) {
-      const response = await axios.post(
-        `${genuka_api_2021_10}/commands`, // TO REPLACE WITH THE UPDATE
-        {
-          client_email: cart.customer.email,
-          customer_details: cart.customer,
-          company_id: company.id,
-          subtotal,
-          shipping: company.shipping_fee || 0,
-          total: subtotal + (company.shipping_fee || 0),
-          note: cart.note,
-          source: "Website",
-          payment: {
-            date: new Date(),
-            mode: cart.payment_mode.slug,
-            state: 0,
-          },
-          shipping: {
-            address: cart.shipping_address,
-            address_type: 2,
-            date: Date.now(),
-            mode: "shipping",
-            state: 0,
-          },
-          produits: cart.items.map((item) => {
-            return {
-              id: item.product.id,
-              quantity: item.quantity,
-              price: item.price,
-              add_to_cart_date: item.add_to_cart_date,
-              properties: item.properties,
-              complement: item.complement,
-              note: item.note,
-            };
-          }),
+    const response = await axios.post(
+      `${genuka_api_2021_10}/commands`, // TO REPLACE WITH THE UPDATE
+      {
+        client_email: cart.client_email,
+        customer_details: cart.customer,
+        company_id: company.id,
+        subtotal,
+        shipping: company.shipping_fee || 0,
+        total: subtotal + (company.shipping_fee || 0),
+        note: cart.note,
+        source: "Website",
+        payment: {
+          date: new Date(),
+          mode: cart.payment_mode.slug,
+          state: 0,
         },
-        { headers: { Authorization: "Bearer " + token } }
-      );
-      if (response.data) {
-        dispatch({ type: "loading", payload: undefined });
-        dispatch({ type: "order_placed", payload: response.data });
-      }
+        shipping: {
+          address: cart.shipping_address,
+          address_type: 2,
+          date: Date.now(),
+          mode: "shipping",
+          state: 0,
+        },
+        produits: cart.items.map((item) => {
+          return {
+            id: item.product.id,
+            quantity: item.quantity,
+            price: item.price,
+            add_to_cart_date: item.add_to_cart_date,
+            properties: item.properties,
+            complement: item.complement,
+            note: item.note,
+          };
+        }),
+      },
+      { headers }
+    );
+    if (response.data) {
+      dispatch({ type: "order_placed", payload: response.data });
     }
   } catch (error) {
     console.error(error);
     dispatch({
-      type: "error",
-      payload: "An error occur when getting addresses",
+      type: "notification",
+      color: "red",
+      payload: "An error occured when placing your order. Error : " + error.message,
     });
   }
+  dispatch({ type: "loading", payload: undefined });
 }
 
 function commentReducer(state, action) {
@@ -496,7 +499,14 @@ function commentReducer(state, action) {
         items: [],
       };
       localStorage.setItem("cart", JSON.stringify(cart));
-      return { ...state, cart, current_order: action.payload, notifications: [...state.notifications, { value: Date.now(), label: "Order " + action.payload.reference + " with success." }] };
+      let notifications = state.notifications;
+      if (action.payload.access_token) {
+        localStorage.setItem("access_token", action.payload.access_token);
+        setCookie("access_token", action.payload.access_token);
+        notifications = [...state.notifications, { value: Date.now(), label: "You have been automatically logged in " }, { value: Date.now(), label: "Order " + action.payload.reference + " with success." }];
+      }
+
+      return { ...state, cart, current_order: action.payload, notifications, isLogged: true , user: action.payload.client};
     }
     case "logout": {
       localStorage.removeItem("access_token");

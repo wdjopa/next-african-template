@@ -138,6 +138,11 @@ function CheckoutPageInformations({ company }) {
     dispatch({type: "cart", payload: {...cart, shipping_address : address}})
   }, [address])
 
+  React.useEffect(()=>{ 
+    if(email)
+    dispatch({type: "cart", payload: {...cart, client_email : email}})
+  }, [email])
+
   if (!company) return <EmptyStore />;
 
   const items = [
@@ -185,7 +190,7 @@ function CheckoutPageInformations({ company }) {
                   <div className="col-md-12">
                     <Input
                       type="email"
-                      value={email}
+                      value={cart.client_email}
                       onChange={(e) => {
                         setEmail(e.target.value);
                       }}
@@ -197,7 +202,7 @@ function CheckoutPageInformations({ company }) {
                       <Input type="password" placeholder="Your password" />
                     </div>
                   )}
-                  {!isLogged && (
+                  {/* {!isLogged && (
                     <div className="col-md-12">
                       <Checkbox
                         label="Create an account"
@@ -207,7 +212,7 @@ function CheckoutPageInformations({ company }) {
                         checked={createAccount}
                       />
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

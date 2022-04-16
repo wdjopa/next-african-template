@@ -46,8 +46,29 @@ function Pagination({ pagination }) {
           <PreviousArrow />
         </RoundedPageNumber>
       </Link>
-      {new Array(pagination.last_page).fill().map((_, i) => {
-        let ind = i + 1;
+      {pagination.current_page > 3 && (
+        <>
+          <Link href={router.pathname + "?per_page=" + pagination.per_page + "&page=1"} passHref key={Math.random()}>
+            <RoundedPageNumber key={"page_1"} active={1 === pagination.current_page}>
+              1
+            </RoundedPageNumber>
+          </Link>
+
+          <RoundedPageNumber>...</RoundedPageNumber>
+        </>
+      )}
+      {new Array(3).fill().map((_, i) => {
+        let ind = i;
+        if (pagination.current_page > 2) {
+          if (pagination.current_page <= pagination.last_page - 2) {
+            ind = pagination.current_page + (i - 2);
+          } else {
+            ind = pagination.current_page + (i - 1);
+          }
+        } else {
+          ind = i + 1;
+        }
+        if (ind > pagination.last_page) return <></>;
         return (
           <Link href={router.pathname + "?per_page=" + pagination.per_page + "&page=" + ind} passHref key={Math.random()}>
             <RoundedPageNumber key={"page_" + ind} active={ind === pagination.current_page}>
@@ -56,8 +77,17 @@ function Pagination({ pagination }) {
           </Link>
         );
       })}
-      {/* <RoundedPageNumber>...</RoundedPageNumber>
-      <RoundedPageNumber>45</RoundedPageNumber> */}
+      {pagination.current_page < pagination.last_page - 1 && (
+        <>
+          <RoundedPageNumber>...</RoundedPageNumber>
+
+          <Link href={router.pathname + "?per_page=" + pagination.per_page + "&page=" + pagination.last_page} passHref key={Math.random()}>
+            <RoundedPageNumber key={"page_" + pagination.last_page} active={pagination.last_page === pagination.current_page}>
+              {pagination.last_page}
+            </RoundedPageNumber>
+          </Link>
+        </>
+      )}
 
       <Link passHref href={pagination.next != null ? router.pathname + "?per_page=" + pagination.per_page + "&page=" + (parseInt(pagination.current_page) + 1) : "#"}>
         <RoundedPageNumber>

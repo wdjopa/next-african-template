@@ -155,9 +155,11 @@ function CheckoutPagePayment({ company }) {
                   onClick={() => {
                     if (cart.payment_mode) {
                       placeOrder(dispatch, cart, company);
+                    } else {
+                      dispatch({ type: "notification", payload: "Please select a payment mode", color: "purple" });
                     }
                   }}
-                  isLoading={loading?.order}
+                  isLoading={loading?.order || !cart.payment_mode}
                 >
                   Place my order
                 </DesignedButton>

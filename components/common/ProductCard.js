@@ -29,6 +29,10 @@ const ProductName = styledComponents.h5`
     font-weight: 500;
     text-align:center;
     margin-top: 1rem;
+     white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 10px;
     `;
 const ProductPrice = styledComponents.div`
     font-size: 1rem;
@@ -46,7 +50,7 @@ function ProductCard(props) {
             <ImageContainer>
               <Image src={product?.medias?.length > 0 ? product.medias[0].thumb : ""} alt={"Image du produit " + product.name} />
             </ImageContainer>
-            <ProductName>{product.name}</ProductName>
+            <ProductName title={product.name}>{product.name}</ProductName>
             <ProductPrice>
               <NumberFormat thousandsGroupStyle="thousand" value={product.price} decimalSeparator="." displayType="text" thousandSeparator={true} allowNegative={false} suffix={" " + currencySymbol} />
             </ProductPrice>

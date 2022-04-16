@@ -34,15 +34,15 @@ const ProductGrid = styledComponents.div`
 export async function getServerSideProps(context) {
   const { req, query, res, asPath, pathname } = context;
   let company_url = "https://" + req.headers.host;
-  
-  let company,  products, result;
-  
+
+  let company, products, result;
+
   result = await fetch(`https://api.genuka.com/2021-10/companies/byurl?url=${company_url}`);
   company = await result.json();
 
-  const {per_page = 12, page = 1} = query
-  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/products?per_page=${per_page}&page=${page}`);
-  products = (await result.json());
+  const { per_page = 12, page = 1, order_by = "sells", order_dir = "desc" } = query;
+  result = await fetch(`https://api.genuka.com/2021-10/companies/${company.id}/products?order_by=${order_by}&order_dir=${order_dir}&per_page=${per_page}&page=${page}`);
+  products = await result.json();
 
   return {
     props: {
@@ -58,11 +58,9 @@ function CatalogPage({ company, collection, products }) {
       company={company}
       head={
         <>
-          <title>
-            {company.name} | Catalog - check out our products
-          </title>
-            <link rel="favicon" href={company.logo} />
-            <link rel="icon" href={company.logo} />
+          <title>{company.name} | Catalog - check out our products</title>
+          <link rel="favicon" href={company.logo} />
+          <link rel="icon" href={company.logo} />
           <meta name="description" content={company.description} />
           <meta name="keywords" content={company?.description?.split(" ").join(", ")} />
           <meta name="author" content={company.name} />
